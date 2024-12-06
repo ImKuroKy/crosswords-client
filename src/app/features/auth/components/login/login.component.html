@@ -1,0 +1,65 @@
+<div class="login">
+  <form
+    class="login__form"
+    (ngSubmit)="onSubmit(loginForm)"
+    #loginForm="ngForm"
+  >
+    <h2 class="login__title">Вход</h2>
+    <div class="login__field">
+      <label for="nickname" class="login__label">Никнейм</label>
+      <input
+        placeholder="Введите ваш никнейм"
+        type="text"
+        id="nickname"
+        name="nickname"
+        [(ngModel)]="user.nickname"
+        required
+        #nickname="ngModel"
+        class="login__input"
+        [class.invalid]="
+          nickname.invalid && (nickname.dirty || nickname.touched)
+        "
+      />
+      <div
+        *ngIf="nickname.invalid && (nickname.dirty || nickname.touched)"
+        class="error"
+      >
+        <small class="login__error" *ngIf="nickname.errors?.['required']"
+          >Никнейм обязателен.</small
+        >
+      </div>
+    </div>
+    <div class="login__field">
+      <label for="password" class="login__label">Пароль</label>
+      <input
+        placeholder="Введите ваш пароль"
+        type="password"
+        id="password"
+        name="password"
+        [(ngModel)]="user.password"
+        required
+        minlength="6"
+        #password="ngModel"
+        class="login__input"
+        [class.invalid]="
+          password.invalid && (password.dirty || password.touched)
+        "
+      />
+      <div
+        *ngIf="password.invalid && (password.dirty || password.touched)"
+        class="error"
+      >
+        <small class="login__error" *ngIf="password.errors?.['required']"
+          >Пароль обязателен.</small
+        >
+        <small class="login__error" *ngIf="password.errors?.['minlength']"
+          >Пароль должен быть не менее 6 символов.</small
+        >
+      </div>
+    </div>
+    <button type="submit" class="login__button">Войти</button>
+    <div class="login__links">
+      <a routerLink="/auth/register" class="login__link">Зарегистрироваться</a>
+    </div>
+  </form>
+</div>

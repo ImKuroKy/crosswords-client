@@ -1,0 +1,26 @@
+<nav class="navbar">
+  <div class="navbar__brand">
+    <div class="navbar__brand-content">
+      <img class="navbar__logo" src="logo.svg" alt="App Logo" />
+      <span>Классические кроссворды</span>
+    </div>
+  </div>
+  <div class="navbar__buttons">
+    <button
+      routerLink="auth/login"
+      routerLinkActive="navbar__button--active"
+      class="navbar__button navbar__button--login"
+      *ngIf="!isAuthenticated"
+    >
+      Войти
+    </button>
+    <button
+      routerLink="auth/register"
+      routerLinkActive="navbar__button--active"
+      class="navbar__button navbar__button--register"
+      *ngIf="!isAuthenticated"
+    >
+      Зарегистрироваться
+    </button>
+  </div>
+</nav>
