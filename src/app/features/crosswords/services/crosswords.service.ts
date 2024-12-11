@@ -11,15 +11,27 @@ export class CrosswordsService {
 
   constructor(private http: HttpClient) {}
 
+  getUserId(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/user`);
+  }
+
   getCrosswords(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/crosswords/library`);
   }
-  
-  getUserId(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/crosswords/user`)
+
+  getUserCrosswords(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/user/library`);
   }
 
   addCrosswordToLibrary(crosswordId: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/crosswords/add`, { id: crosswordId });
+    return this.http.post<any>(`${this.apiUrl}/crosswords/add`, {
+      id: crosswordId,
+    });
+  }
+
+  deleteCrosswordFromLibrary(crosswordId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/crosswords/delete`, {
+      id: crosswordId,
+    });
   }
 }
