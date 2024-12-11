@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { CrosswordsService } from '../../services/crosswords.service'; // Обновите путь в соответствии с вашим проектом
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
+import { CrosswordsService } from '../../services/crosswords.service';
 import { CommonModule } from '@angular/common';
 
 interface Crossword {
@@ -9,11 +10,13 @@ interface Crossword {
 @Component({
   selector: 'app-public-library',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, NotificationComponent],
   templateUrl: './public-library.component.html',
   styleUrl: './public-library.component.css',
 })
 export class PublicLibraryComponent implements OnInit {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
+
   crosswords: Crossword[] = [];
   paginatedCrosswords: Crossword[][] = [];
   currentPage = 0;
@@ -49,11 +52,11 @@ export class PublicLibraryComponent implements OnInit {
     this.crosswordsService.addCrosswordToLibrary(crosswordId).subscribe({
       next: (response) => {
         console.log('Crossword added to library:', response);
-        // Здесь можно добавить логику для уведомления пользователя о успешном добавлении
+        this.notification.show('Crossword added to library successfully!', 'success');
       },
       error: (error) => {
         console.error('Error adding crossword to library:', error);
-        // Здесь можно добавить логику для уведомления пользователя о ошибке
+        this.notification.show('Error adding crossword to library.', 'error');
       },
     });
   }
