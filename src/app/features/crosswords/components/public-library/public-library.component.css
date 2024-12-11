@@ -1,0 +1,125 @@
+.library {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  background-color: #f5f5dc; /* Бежевый цвет фона */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.library__container {
+  background-color: #8b4513; /* Темно-коричневый цвет фона */
+  padding: 20px;
+  border-radius: 0.375rem;
+  width: 100%;
+  max-width: 1200px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.library__title {
+  color: #ffffff; /* Белый цвет текста */
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.library__create-button {
+  background-color: #d2b48c; /* Цвет загара */
+  color: #8b4513; /* Темно-коричневый цвет текста */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.library__create-button:hover {
+  background-color: #c0a16b; /* Более темный цвет загара при наведении */
+}
+
+.library__content {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto; /* Горизонтальная прокрутка */
+  padding-bottom: 20px;
+  max-height: calc(
+    100vh - 200px
+  ); /* Ограничение высоты, чтобы не перекрывать footer */
+  flex-wrap: wrap; /* Чтобы карточки переносились на новую строку */
+}
+
+.library__card {
+  background-color: #d2b48c; /* Цвет загара */
+  color: #8b4513; /* Темно-коричневый цвет текста */
+  border-radius: 0.375rem;
+  padding: 20px;
+  min-width: 250px; /* Минимальная ширина карточки */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative; /* Для позиционирования кнопки */
+  flex: 0 0 auto; /* Чтобы карточки не сжимались и не растягивались */
+}
+
+.library__card-add-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #8b4513; /* Темно-коричневый цвет */
+  color: #ffffff; /* Белый цвет текста */
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.library__card-add-button:hover {
+  background-color: #6b3a10; /* Более темный оттенок коричневого при наведении */
+}
+
+.library__card-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.library__card-image {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.library__pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.library__pagination-button {
+  background-color: #d2b48c; /* Цвет загара */
+  color: #8b4513; /* Темно-коричневый цвет текста */
+  border: none;
+  padding: 10px 20px;
+  margin: 0 5px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.library__pagination-button:hover {
+  background-color: #c0a16b; /* Более темный цвет загара при наведении */
+}
+
+.library__pagination-button.active {
+  background-color: #8b4513; /* Темно-коричневый цвет */
+  color: #ffffff; /* Белый цвет текста */
+}

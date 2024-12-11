@@ -1,0 +1,37 @@
+<div class="library">
+  <div class="library__container">
+    <h2 class="library__title">Public Library</h2>
+    <button
+      *ngIf="userId === 1"
+      class="library__create-button"
+      routerLink="crosswords/create"
+    >
+      Создать кроссворд
+    </button>
+    <div class="library__content">
+      <div
+        class="library__card"
+        *ngFor="let crossword of paginatedCrosswords[currentPage]"
+      >
+        <button
+          class="library__card-add-button"
+          (click)="addCrosswordToLibrary(crossword.id)"
+        >
+          +
+        </button>
+        <h3 class="library__card-title">{{ crossword.title }}</h3>
+        <img src="logo.svg" alt="Crossword Image" class="library__card-image" />
+      </div>
+    </div>
+    <div class="library__pagination">
+      <button
+        *ngFor="let page of totalPages; let i = index"
+        class="library__pagination-button"
+        [class.active]="i === currentPage"
+        (click)="goToPage(i)"
+      >
+        {{ i + 1 }}
+      </button>
+    </div>
+  </div>
+</div>
