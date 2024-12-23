@@ -30,9 +30,10 @@ export class LoginComponent {
 
     this.apiService.login(this.user).subscribe({
       next: (response) => {
-        this.router.navigate(['/profile']);
+        this.router.navigate(['/crosswords/all']);
         this.checkTokenService.login();
         localStorage.setItem('token', response.token);
+
       },
       error: (error) => {
         console.error('There was an error logging in: ', error);
