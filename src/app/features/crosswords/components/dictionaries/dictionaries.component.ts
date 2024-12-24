@@ -2,19 +2,27 @@ import { Component } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { CommonModule } from '@angular/common';
+import { DictionaryService } from '../../services/dictionaries.service';
+import { Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-dictionaries',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dictionaries.component.html',
   styleUrl: './dictionaries.component.css',
 })
 export class DictionariesComponent {
   file: File | null = null;
+  dictionaryName: string = '';
   private apiUrl = `${environment.apiUrl}/dictionaries`;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private dictionaryService: DictionaryService
+  ) {}
 
   openFileChooser() {
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -40,15 +48,16 @@ export class DictionariesComponent {
   }
 
   uploadFile() {
-    if (this.file) {
+    if (this.file && this.dictionaryName) {
       const formData = new FormData();
       formData.append('file', this.file, this.file.name);
+      formData.append('name', this.dictionaryName);
 
-      this.http.post(this.apiUrl, formData).subscribe({
+      this.dictionaryService.uploadDictionary(formData).subscribe({
         next: (response) => {
           console.log('File uploaded successfully', response);
           alert('Файл загружен успешно!');
-          this.file = null; // Сбросить выбранный файл после успешной загрузки
+          this.router.navigate(['/dictionaries']);
         },
         error: (error) => {
           console.error('Error uploading file', error);

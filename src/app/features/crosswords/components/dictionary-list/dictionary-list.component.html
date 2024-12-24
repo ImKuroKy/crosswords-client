@@ -1,0 +1,22 @@
+<div class="dictionary-list">
+  <div class="dictionary-list__container">
+    <button 
+      class="dictionary-list__add-button"
+      (click)="navigateToUpload()"
+    >
+      Добавить словарь
+    </button>
+    <h2 class="dictionary-list__title">Словари</h2>
+    <ul class="dictionary-list__items">
+      <li *ngFor="let dictionary of dictionaries" class="dictionary-list__item">
+        <span>{{ dictionary.name }}</span>
+        <button 
+          class="dictionary-list__delete-button" 
+          (click)="deleteDictionary(dictionary.dictionary_id)"
+        >
+          Удалить
+        </button>
+      </li>
+    </ul>
+  </div>
+</div>
