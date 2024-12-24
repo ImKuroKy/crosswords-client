@@ -6,6 +6,8 @@ import { PublicLibraryComponent } from './features/crosswords/components/public-
 import { UserLibraryComponent } from './features/crosswords/components/user-library/user-library.component';
 import { DictionariesComponent } from './features/crosswords/components/dictionaries/dictionaries.component';
 import { DictionaryListComponent } from './features/crosswords/components/dictionary-list/dictionary-list.component';
+import { DevelopersComponent } from './features/about/components/developers/developers.component';
+import { SystemComponent } from './features/about/components/system/system.component';
 
 export const routes: Routes = [
   {
@@ -37,6 +39,16 @@ export const routes: Routes = [
     title: 'Все словари',
     path: 'crosswords/dictionary-list',
     component: DictionaryListComponent,
+  },
+  {
+    title: 'О разработчиках',
+    path: 'about/developers',
+    component: DevelopersComponent,
+  },
+  {
+    title: 'О системе',
+    path: 'about/system',
+    component: SystemComponent,
   },
   { path: '', redirectTo: '/auth/login', pathMatch: 'full' },
   { path: '**', redirectTo: '/auth/login' }, // Redirect unknown routes to login
