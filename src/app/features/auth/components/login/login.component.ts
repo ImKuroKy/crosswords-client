@@ -30,7 +30,7 @@ export class LoginComponent {
 
     this.apiService.login(this.user).subscribe({
       next: (response) => {
-        this.router.navigate(['/crosswords/all']);
+        this.router.navigate(['/crosswords/library']);
         this.checkTokenService.login();
         localStorage.setItem('token', response.token);
 

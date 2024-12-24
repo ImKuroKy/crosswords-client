@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     title: 'Все кроссворды',
-    path: 'crosswords/all',
+    path: 'crosswords/library',
     component: PublicLibraryComponent,
   },
   {

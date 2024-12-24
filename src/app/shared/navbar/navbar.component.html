@@ -22,5 +22,36 @@
     >
       Зарегистрироваться
     </button>
+    <button
+      routerLink="crosswords/library"
+      routerLinkActive="navbar__button--active"
+      class="navbar__button navbar__button--register"
+      *ngIf="isAuthenticated"
+    >
+      Все кроссворды
+    </button>
+    <button
+      routerLink="crosswords/user/library"
+      routerLinkActive="navbar__button--active"
+      class="navbar__button navbar__button--register"
+      *ngIf="isAuthenticated && !isAdmin"
+    >
+      Мои кроссворды
+    </button>
+    <button
+      routerLink="crosswords/dictionaries"
+      routerLinkActive="navbar__button--active"
+      class="navbar__button navbar__button--register"
+      *ngIf="isAuthenticated && isAdmin"
+    >
+      Словари
+    </button>
+    <button
+      class="navbar__button navbar__button--register"
+      *ngIf="isAuthenticated"
+      (click)="onLogout()"
+    >
+      Выйти
+    </button>
   </div>
 </nav>
