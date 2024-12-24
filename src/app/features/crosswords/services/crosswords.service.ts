@@ -29,18 +29,27 @@ export class CrosswordsService {
   }
 
   getCrosswords(): Observable<Crossword[]> {
-    return this.http.get<CrosswordResponse[]>(`${this.apiUrl}/crosswords/library`).pipe(
-      map((data: CrosswordResponse[]) =>
+    return this.http
+      .get<CrosswordResponse[]>(`${this.apiUrl}/crosswords/library`)
+      .pipe(
+        map((data: CrosswordResponse[]) =>
+          data.map((crossword) => ({
+            id: crossword.crossword_id.toString(),
+            title: crossword.title,
+          }))
+        )
+      );
+  }
+
+  getUserCrosswords(): Observable<Crossword[]> {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/user/library`).pipe(
+      map((data: any[]) =>
         data.map((crossword) => ({
           id: crossword.crossword_id.toString(),
           title: crossword.title,
         }))
       )
     );
-  }
-
-  getUserCrosswords(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/crosswords/user/library`);
   }
 
   addCrosswordToLibrary(crosswordId: string): Observable<any> {
@@ -54,7 +63,7 @@ export class CrosswordsService {
       body: { id: crosswordId },
     });
   }
-  
+
   deleteCrosswordFromPublicLibrary(crosswordId: string): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/crosswords/library`, {
       body: { id: crosswordId },

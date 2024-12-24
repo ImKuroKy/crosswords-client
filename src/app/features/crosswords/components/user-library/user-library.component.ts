@@ -32,27 +32,28 @@ export class UserLibraryComponent implements OnInit {
     this.crosswordsService.getUserCrosswords().subscribe({
       next: (data: Crossword[]) => {
         this.crosswords = data;
+        this.paginateCrosswords();
       },
       error: (error) => {
         console.error('Error fetching crosswords:', error);
       },
     });
-    this.paginateCrosswords();
   }
 
   deleteCrosswordFromLibrary(crosswordId: string) {
     this.crosswordsService.deleteCrosswordFromLibrary(crosswordId).subscribe({
       next: (response) => {
         console.log('Crossword deleted from library:', response);
+        this.fetchCrosswords();
         this.notification.show(
-          'Crossword deleted from library successfully!',
+          'Кроссворд удалён!',
           'success'
         );
       },
       error: (error) => {
         console.error('Error deleting crossword from library:', error);
         this.notification.show(
-          'Error deleting crossword from library.',
+          'Произошла ошибка при удалении кроссворда.',
           'error'
         );
       },
@@ -60,7 +61,7 @@ export class UserLibraryComponent implements OnInit {
   }
 
   paginateCrosswords(): void {
-    const pageSize = 12;
+    const pageSize = 10;
     this.paginatedCrosswords = [];
     for (let i = 0; i < this.crosswords.length; i += pageSize) {
       this.paginatedCrosswords.push(this.crosswords.slice(i, i + pageSize));

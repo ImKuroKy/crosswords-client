@@ -42,7 +42,7 @@ export class PublicLibraryComponent implements OnInit {
     this.crosswordsService.getCrosswords().subscribe({
       next: (data: Crossword[]) => {
         this.crosswords = data;
-        this.paginateCrosswords(); // Переместите вызов paginateCrosswords внутрь успешного коллбэка
+        this.paginateCrosswords();
       },
       error: (error) => {
         console.error('Error fetching crosswords:', error);
@@ -72,6 +72,7 @@ export class PublicLibraryComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Crossword deleted from public library:', response);
+          this.fetchCrosswords();
           this.notification.show('Кроссворд удалён!', 'success');
         },
         error: (error) => {
@@ -86,7 +87,7 @@ export class PublicLibraryComponent implements OnInit {
   }
 
   paginateCrosswords(): void {
-    const pageSize = 12;
+    const pageSize = 10;
     this.paginatedCrosswords = [];
     for (let i = 0; i < this.crosswords.length; i += pageSize) {
       this.paginatedCrosswords.push(this.crosswords.slice(i, i + pageSize));
