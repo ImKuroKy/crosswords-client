@@ -1,0 +1,63 @@
+.dictionary {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  background-color: #f5f5dc; /* Бежевый цвет фона */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.dictionary__container {
+  background-color: #8b4513; /* Темно-коричневый цвет фона */
+  padding: 20px;
+  border-radius: 0.375rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dictionary__title {
+  color: #ffffff; /* Белый цвет текста */
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.dictionary__dropzone {
+  border: 2px dashed #cccccc;
+  border-radius: 0.375rem;
+  padding: 20px;
+  margin: 20px 20px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.dictionary__dropzone:hover {
+  background-color: #c0a16b; /* Более темный цвет загара при наведении */
+}
+
+.dictionary__button {
+  background-color: #d2b48c; /* Цвет загара */
+  color: #8b4513; /* Темно-коричневый цвет текста */
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+}
+
+.dictionary__button:hover {
+  background-color: #c0a16b; /* Более темный цвет загара при наведении */
+}
+
+.dictionary__file-info {
+  color: #ffffff; /* Белый цвет текста */
+  margin-bottom: 10px;
+}

@@ -1,0 +1,30 @@
+<div class="dictionary">
+  <div class="dictionary__container">
+    <h2 class="dictionary__title">Загрузить словарь</h2>
+
+    <!-- Область для перетаскивания файла -->
+    <div 
+      class="dictionary__dropzone" 
+      (dragover)="onDragOver($event)" 
+      (drop)="onDrop($event)"
+    >
+      Перетащите файл сюда
+    </div>
+
+    <!-- Кнопка для выбора файла -->
+    <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden>
+    <button (click)="openFileChooser()" class="dictionary__button">
+      Выбрать файл
+    </button>
+
+    <!-- Информация о выбранном файле -->
+    <div *ngIf="file" class="dictionary__file-info">
+      <p>Выбран файл: {{ file.name }}</p>
+    </div>
+
+    <!-- Кнопка подтверждения загрузки -->
+    <button (click)="uploadFile()" class="dictionary__button" [disabled]="!file">
+      Загрузить
+    </button>
+  </div>
+</div>
