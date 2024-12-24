@@ -1,18 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { NotificationComponent } from "../../../../shared/notification/notification.component";
+import { NotificationComponent } from '../../../../shared/notification/notification.component';
 import { CrosswordsService } from '../../services/crosswords.service';
 import { CommonModule } from '@angular/common';
+import { Router, RouterModule } from '@angular/router';
 
 interface Crossword {
   id: string;
   title: string;
 }
+
 @Component({
   selector: 'app-public-library',
   standalone: true,
-  imports: [CommonModule, NotificationComponent],
+  imports: [CommonModule, RouterModule, NotificationComponent],
   templateUrl: './public-library.component.html',
-  styleUrl: './public-library.component.css',
+  styleUrls: ['./public-library.component.css'],
 })
 export class PublicLibraryComponent implements OnInit {
   @ViewChild(NotificationComponent) notification!: NotificationComponent;
@@ -23,7 +25,7 @@ export class PublicLibraryComponent implements OnInit {
   totalPages: number[] = [];
   userId: number = 0;
 
-  constructor(private crosswordsService: CrosswordsService) {}
+  constructor(private crosswordsService: CrosswordsService, private router: Router) {}
 
   ngOnInit() {
     this.fetchUserId();
@@ -40,25 +42,47 @@ export class PublicLibraryComponent implements OnInit {
     this.crosswordsService.getCrosswords().subscribe({
       next: (data: Crossword[]) => {
         this.crosswords = data;
+        this.paginateCrosswords(); // Переместите вызов paginateCrosswords внутрь успешного коллбэка
       },
       error: (error) => {
         console.error('Error fetching crosswords:', error);
       },
     });
-    this.paginateCrosswords();
   }
 
   addCrosswordToLibrary(crosswordId: string) {
     this.crosswordsService.addCrosswordToLibrary(crosswordId).subscribe({
       next: (response) => {
         console.log('Crossword added to library:', response);
-        this.notification.show('Crossword added to library successfully!', 'success');
+        this.notification.show('Кроссворд добавлен в библиотеку!', 'success');
       },
       error: (error) => {
         console.error('Error adding crossword to library:', error);
-        this.notification.show('Error adding crossword to library.', 'error');
+        this.notification.show(
+          'Ошибка при добавлении кроссворда в библиотеку.',
+          'error'
+        );
       },
     });
+  }
+
+  deleteCrosswordFromPublicLibrary(crosswordId: string) {
+    this.crosswordsService
+      .deleteCrosswordFromPublicLibrary(crosswordId)
+      .subscribe({
+        next: (response) => {
+          console.log('Crossword deleted from public library:', response);
+          this.notification.show('Кроссворд удалён!', 'success');
+        },
+        error: (error) => {
+          console.error('Error adding crossword to library:', error);
+          this.notification.show('Ошибка при удалении кроссворда.', 'error');
+        },
+      });
+  }
+
+  editCrossword(crosswordId: string) {
+    this.router.navigate([`/crosswords/edit?${crosswordId}`]);
   }
 
   paginateCrosswords(): void {

@@ -14,10 +14,25 @@
         *ngFor="let crossword of paginatedCrosswords[currentPage]"
       >
         <button
+          *ngIf="userId !== 1"
           class="library__card-add-button"
           (click)="addCrosswordToLibrary(crossword.id)"
         >
           +
+        </button>
+        <button
+          *ngIf="userId == 1"
+          class="library__card-add-button"
+          (click)="deleteCrosswordFromPublicLibrary(crossword.id)"
+        >
+          X
+        </button>
+        <button
+          *ngIf="userId == 1"
+          class="library__card-delete-button"
+          (click)="editCrossword(crossword.id)"
+        >
+          ✎
         </button>
         <h3 class="library__card-title">{{ crossword.title }}</h3>
         <img src="logo.svg" alt="Crossword Image" class="library__card-image" />
