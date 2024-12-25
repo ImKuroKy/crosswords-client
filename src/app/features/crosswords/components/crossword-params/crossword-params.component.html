@@ -1,46 +1,128 @@
 <div class="crossword-params">
-  <button class="crossword-params__back-button" (click)="goBack()">←</button>
-  <h1 class="crossword-params__title">Настройка параметров кроссворда</h1>
-  <form class="crossword-params__form" (ngSubmit)="onSubmit()">
-    <div class="crossword-params__field">
-      <label for="title" class="crossword-params__label">Название кроссворда:</label>
-      <input id="title" type="text" [(ngModel)]="formData.title" name="title" required minlength="6" maxlength="30" class="crossword-params__input">
-      <div *ngIf="formErrors.title" class="crossword-params__error">{{ formErrors.title }}</div>
-    </div>
-    <div class="crossword-params__field">
-      <label for="width" class="crossword-params__label">Ширина сетки:</label>
-      <input id="width" type="number" [(ngModel)]="formData.width" name="width" min="4" max="20" required class="crossword-params__input">
-      <div *ngIf="formErrors.width" class="crossword-params__error">{{ formErrors.width }}</div>
-    </div>
-    <div class="crossword-params__field">
-      <label for="height" class="crossword-params__label">Высота сетки:</label>
-      <input id="height" type="number" [(ngModel)]="formData.height" name="height" min="4" max="20" required class="crossword-params__input">
-      <div *ngIf="formErrors.height" class="crossword-params__error">{{ formErrors.height }}</div>
-    </div>
-    <div class="crossword-params__field">
-      <label for="hints" class="crossword-params__label">Количество подсказок:</label>
-      <input id="hints" type="number" [(ngModel)]="formData.hints" name="hints" min="0" max="10" required class="crossword-params__input">
-      <div *ngIf="formErrors.hints" class="crossword-params__error">{{ formErrors.hints }}</div>
-    </div>
-    <div class="crossword-params__field">
-      <label for="dictionary" class="crossword-params__label">Словарь:</label>
-      <select id="dictionary" [(ngModel)]="formData.dictionary" name="dictionary" required class="crossword-params__select">
-        <option *ngFor="let dictionary of dictionaries" [value]="dictionary.id">{{ dictionary.name }}</option>
-      </select>
-      <div *ngIf="formErrors.dictionary" class="crossword-params__error">{{ formErrors.dictionary }}</div>
-    </div>
-    <div class="crossword-params__field">
-      <span class="crossword-params__label">Способ заполнения:</span>
-      <label class="crossword-params__radio-label">
-        <input type="radio" [(ngModel)]="formData.fillMethod" name="fillMethod" value="manual" required class="crossword-params__radio-input">
-        Вручную
-      </label>
-      <label class="crossword-params__radio-label">
-        <input type="radio" [(ngModel)]="formData.fillMethod" name="fillMethod" value="automatic" class="crossword-params__radio-input">
-        Автоматически
-      </label>
-      <div *ngIf="formErrors.fillMethod" class="crossword-params__error">{{ formErrors.fillMethod }}</div>
-    </div>
-    <button type="submit" class="crossword-params__submit-button">Подтвердить</button>
-  </form>
+  <div class="crossword-params__container">
+    <button class="crossword-params__back-button" (click)="goBack()">←</button>
+    <h1 class="crossword-params__title">Настройка параметров кроссворда</h1>
+    <form class="crossword-params__form" (ngSubmit)="onSubmit()">
+      <div class="crossword-params__field">
+        <label for="title" class="crossword-params__label"
+          >Название кроссворда:</label
+        >
+        <input
+          id="title"
+          type="text"
+          [(ngModel)]="formData.title"
+          name="title"
+          required
+          minlength="6"
+          maxlength="30"
+          class="crossword-params__input"
+        />
+        <div *ngIf="formErrors.title" class="crossword-params__error">
+          {{ formErrors.title }}
+        </div>
+      </div>
+      <div class="crossword-params__field">
+        <label for="width" class="crossword-params__label">Ширина сетки:</label>
+        <input
+          id="width"
+          type="number"
+          [(ngModel)]="formData.width"
+          name="width"
+          min="4"
+          max="20"
+          required
+          class="crossword-params__input"
+        />
+        <div *ngIf="formErrors.width" class="crossword-params__error">
+          {{ formErrors.width }}
+        </div>
+      </div>
+      <div class="crossword-params__field">
+        <label for="height" class="crossword-params__label"
+          >Высота сетки:</label
+        >
+        <input
+          id="height"
+          type="number"
+          [(ngModel)]="formData.height"
+          name="height"
+          min="4"
+          max="20"
+          required
+          class="crossword-params__input"
+        />
+        <div *ngIf="formErrors.height" class="crossword-params__error">
+          {{ formErrors.height }}
+        </div>
+      </div>
+      <div class="crossword-params__field">
+        <label for="hints" class="crossword-params__label"
+          >Количество подсказок:</label
+        >
+        <input
+          id="hints"
+          type="number"
+          [(ngModel)]="formData.hints"
+          name="hints"
+          min="0"
+          max="10"
+          required
+          class="crossword-params__input"
+        />
+        <div *ngIf="formErrors.hints" class="crossword-params__error">
+          {{ formErrors.hints }}
+        </div>
+      </div>
+      <div class="crossword-params__field">
+        <label for="dictionary" class="crossword-params__label">Словарь:</label>
+        <select
+          id="dictionary"
+          [(ngModel)]="formData.dictionary"
+          name="dictionary"
+          required
+          class="crossword-params__select"
+        >
+          <option
+            *ngFor="let dictionary of dictionaries"
+            [value]="dictionary.id"
+          >
+            {{ dictionary.name }}
+          </option>
+        </select>
+        <div *ngIf="formErrors.dictionary" class="crossword-params__error">
+          {{ formErrors.dictionary }}
+        </div>
+      </div>
+      <div class="crossword-params__field">
+        <span class="crossword-params__label">Способ заполнения:</span>
+        <label class="crossword-params__radio-label">
+          <input
+            type="radio"
+            [(ngModel)]="formData.fillMethod"
+            name="fillMethod"
+            value="manual"
+            required
+            class="crossword-params__radio-input"
+          />
+          Вручную
+        </label>
+        <label class="crossword-params__radio-label">
+          <input
+            type="radio"
+            [(ngModel)]="formData.fillMethod"
+            name="fillMethod"
+            value="automatic"
+            class="crossword-params__radio-input"
+          />
+          Автоматически
+        </label>
+        <div *ngIf="formErrors.fillMethod" class="crossword-params__error">
+          {{ formErrors.fillMethod }}
+        </div>
+      </div>
+      <button type="submit" class="crossword-params__submit-button">
+        Подтвердить
+      </button>
+    </form>
+  </div>
 </div>
