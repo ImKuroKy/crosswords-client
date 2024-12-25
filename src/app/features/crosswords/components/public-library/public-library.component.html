@@ -4,7 +4,7 @@
     <button
       *ngIf="userId === 1"
       class="library__create-button"
-      routerLink="crosswords/create"
+      (click)="createCrossword()"
     >
       Создать кроссворд
     </button>

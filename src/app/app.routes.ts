@@ -8,6 +8,7 @@ import { DictionariesComponent } from './features/crosswords/components/dictiona
 import { DictionaryListComponent } from './features/crosswords/components/dictionary-list/dictionary-list.component';
 import { DevelopersComponent } from './features/about/components/developers/developers.component';
 import { SystemComponent } from './features/about/components/system/system.component';
+import { CrosswordParamsComponent } from './features/crosswords/components/crossword-params/crossword-params.component';
 
 export const routes: Routes = [
   {
@@ -29,6 +30,11 @@ export const routes: Routes = [
     title: 'Ваши кроссворды',
     path: 'crosswords/user/library',
     component: UserLibraryComponent,
+  },
+  {
+    title: 'Параметры кроссворда',
+    path: 'crosswords/crossword-params',
+    component: CrosswordParamsComponent,
   },
   {
     title: 'Добавить словарь',

@@ -25,7 +25,10 @@ export class PublicLibraryComponent implements OnInit {
   totalPages: number[] = [];
   userId: number = 0;
 
-  constructor(private crosswordsService: CrosswordsService, private router: Router) {}
+  constructor(
+    private crosswordsService: CrosswordsService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.fetchUserId();
@@ -48,6 +51,10 @@ export class PublicLibraryComponent implements OnInit {
         console.error('Error fetching crosswords:', error);
       },
     });
+  }
+
+  createCrossword() {
+    this.router.navigate(['/crosswords/crossword-params']);
   }
 
   addCrosswordToLibrary(crosswordId: string) {
@@ -87,7 +94,7 @@ export class PublicLibraryComponent implements OnInit {
   }
 
   paginateCrosswords(): void {
-    const pageSize = 10;
+    const pageSize = 9;
     this.paginatedCrosswords = [];
     for (let i = 0; i < this.crosswords.length; i += pageSize) {
       this.paginatedCrosswords.push(this.crosswords.slice(i, i + pageSize));
