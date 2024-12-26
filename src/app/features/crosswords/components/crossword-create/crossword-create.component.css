@@ -1,0 +1,24 @@
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #000;
+  text-align: center;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.grid-cell.selected {
+  background-color: #ddd;
+}
+
+.error-message {
+  color: red;
+}
+
+.selected-cell {
+  background-color: lightgray; /* Серый цвет для выделенной клетки */
+}

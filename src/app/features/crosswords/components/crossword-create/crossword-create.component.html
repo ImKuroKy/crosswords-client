@@ -1,0 +1,36 @@
+<div>
+  <h2>Create Crossword</h2>
+  <div>
+    <div>
+      <h3>Grid</h3>
+      <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
+        <div
+          *ngFor="let cell of row; let colIndex = index"
+          class="grid-cell"
+          [class.selected]="isSelectedCell(rowIndex, colIndex)"
+          (mousedown)="startSelection(rowIndex, colIndex)"
+          (mouseover)="continueSelection(rowIndex, colIndex)"
+          (mouseup)="endSelection()"
+        >
+          {{ cell }}
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3>Selected Words</h3>
+      <div *ngFor="let wordObj of selectedWords">
+        <select title="none" (change)="selectWord($event, wordObj)">
+          <option value="" disabled selected>Choose a word</option>
+          <option
+            *ngFor="let word of filterWords(wordObj.cells)"
+            [value]="word.word"
+          >
+            {{ word.word }}
+          </option>
+        </select>
+      </div>
+      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+    </div>
+  </div>
+  <button (click)="saveCrossword()">Save Crossword</button>
+</div>

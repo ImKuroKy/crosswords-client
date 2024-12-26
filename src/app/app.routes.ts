@@ -9,6 +9,7 @@ import { DictionaryListComponent } from './features/crosswords/components/dictio
 import { DevelopersComponent } from './features/about/components/developers/developers.component';
 import { SystemComponent } from './features/about/components/system/system.component';
 import { CrosswordParamsComponent } from './features/crosswords/components/crossword-params/crossword-params.component';
+import { CrosswordCreateComponent } from './features/crosswords/components/crossword-create/crossword-create.component';
 
 export const routes: Routes = [
   {
@@ -35,6 +36,11 @@ export const routes: Routes = [
     title: 'Параметры кроссворда',
     path: 'crosswords/crossword-params',
     component: CrosswordParamsComponent,
+  },
+  {
+    title: 'Создание кроссворда',
+    path: 'crosswords/crossword-create',
+    component: CrosswordCreateComponent,
   },
   {
     title: 'Добавить словарь',

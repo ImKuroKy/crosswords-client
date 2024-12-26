@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './crossword-params.component.html',
-  styleUrl: './crossword-params.component.css'
+  styleUrl: './crossword-params.component.css',
 })
 export class CrosswordParamsComponent implements OnInit {
   formData = {
@@ -18,19 +18,22 @@ export class CrosswordParamsComponent implements OnInit {
     height: 4,
     hints: 0,
     dictionary: '',
-    fillMethod: 'manual'
+    fillMethod: 'manual',
   };
-  dictionaries:any = [];
+  dictionaries: any = [];
   formErrors = {
     title: '',
     width: '',
     height: '',
     hints: '',
     dictionary: '',
-    fillMethod: ''
+    fillMethod: '',
   };
 
-  constructor(private dictionaryService: DictionaryService, private router: Router) {}
+  constructor(
+    private dictionaryService: DictionaryService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadDictionaries();
@@ -85,14 +88,27 @@ export class CrosswordParamsComponent implements OnInit {
       height: '',
       hints: '',
       dictionary: '',
-      fillMethod: ''
+      fillMethod: '',
     };
   }
 
   onSubmit(): void {
     if (this.validateForm()) {
+      // Преобразуем formData в обычный объект
+      const formData = {
+        title: this.formData.title,
+        width: this.formData.width,
+        height: this.formData.height,
+        hints: this.formData.hints,
+        dictionary: this.formData.dictionary,
+        fillMethod: this.formData.fillMethod,
+      };
+
       if (this.formData.fillMethod === 'manual') {
-        this.router.navigate(['/crossword-create'], { state: { formData: this.formData } });
+        // Сохраняем данные в localStorage
+        localStorage.setItem('crosswordFormData', JSON.stringify(formData));
+        // Переходим на другую страницу
+        this.router.navigate(['crosswords/crossword-create']);
       } else {
         // Преобразование formData в FormData
         const formData = new FormData();
@@ -102,11 +118,13 @@ export class CrosswordParamsComponent implements OnInit {
         formData.append('hints', this.formData.hints.toString());
         formData.append('dictionary', this.formData.dictionary);
         formData.append('fillMethod', this.formData.fillMethod);
-  
+
         // Отправка данных на сервер для автоматического заполнения
-        this.dictionaryService.createCrossword(formData).subscribe(response => {
-          this.router.navigate(['/crossword-list']);
-        });
+        this.dictionaryService
+          .createCrossword(formData)
+          .subscribe((response) => {
+            this.router.navigate(['/crossword-list']);
+          });
       }
     }
   }

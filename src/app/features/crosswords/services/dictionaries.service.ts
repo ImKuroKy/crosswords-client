@@ -27,4 +27,9 @@ export class DictionaryService {
   createCrossword(data: FormData): Observable<any> {
     return this.http.post(`${this.apiUrl}/crosswords/create/`, data);
   }
+  // Получаем словарь по названию
+  getDictionaryByName(name: string): Observable<any> {
+    console.log('Dictionary name in service:', name); // Логируем имя словаря в сервисе
+    return this.http.get<any>(`${this.apiUrl}/crosswords/dictionaries/${name}`);
+  }
 }
