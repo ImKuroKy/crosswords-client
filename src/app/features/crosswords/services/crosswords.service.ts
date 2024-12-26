@@ -16,6 +16,30 @@ interface CrosswordResponse {
   content: object;
 }
 
+interface CrosswordData {
+  title: string;
+  width: number;
+  height: number;
+  hints: number;
+  fillMethod: string;
+  dictionary: string;
+  grid: string[][];
+  words: {
+    word: string;
+    definition: string;
+    length: number;
+    row: number;
+    col: number;
+    direction: string;
+    cells: { row: number; col: number }[];
+  }[];
+  clues: {
+    across: { number: number; clue: string; cells: { row: number; col: number }[] }[];
+    down: { number: number; clue: string; cells: { row: number; col: number }[] }[];
+  };
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
@@ -68,5 +92,10 @@ export class CrosswordsService {
     return this.http.delete<any>(`${this.apiUrl}/crosswords/library`, {
       body: { id: crosswordId },
     });
+  }
+
+   // Метод для отправки данных кроссворда на сервер
+   saveCrossword(crosswordData: CrosswordData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/crosswords/add`, crosswordData);
   }
 }

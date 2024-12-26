@@ -3,6 +3,7 @@ import { DictionaryService } from '../../services/dictionaries.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { CrosswordsService } from '../../services/crosswords.service';
 
 interface FormData {
   title: string;
@@ -48,7 +49,8 @@ export class CrosswordCreateComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private dictionaryService: DictionaryService
+    private dictionaryService: DictionaryService,
+    private crosswordsService: CrosswordsService
   ) {
     const navigation = this.router.getCurrentNavigation();
     this.formData = navigation?.extras?.state?.['formData'] || {
@@ -80,14 +82,17 @@ export class CrosswordCreateComponent implements OnInit {
     );
   }
   loadDictionary(): void {
-    console.log('Dictionary name before service call:', this.formData.dictionary);
+    console.log(
+      'Dictionary name before service call:',
+      this.formData.dictionary
+    );
     this.dictionaryService
       .getDictionaryByName(this.formData.dictionary)
       .subscribe({
         next: (data) => {
           // Логируем ответ сервера, чтобы понять структуру данных
           console.log('Dictionary loaded:', data);
-  
+
           // Парсим content, который приходит как строка JSON
           try {
             const parsedContent = JSON.parse(data.content); // Здесь мы парсим строку JSON
@@ -107,9 +112,12 @@ export class CrosswordCreateComponent implements OnInit {
         },
       });
   }
-  
 
   startSelection(row: number, col: number): void {
+    // Очищаем массив selectedWords от пустых слов
+    this.selectedWords = this.selectedWords.filter(
+      (wordObj) => wordObj.word !== ''
+    );
     this.selectedCells = [{ row, col }];
   }
 
@@ -185,23 +193,97 @@ export class CrosswordCreateComponent implements OnInit {
     });
   }
 
-  saveCrossword(): void {
-    const crosswordData = {
-      grid: this.grid,
-      words: this.selectedWords.map((wordObj) => ({
-        word: wordObj.word,
-        cells: wordObj.cells,
-      })),
-    };
-
-    console.log('Crossword Data:', crosswordData);
-    this.router.navigate(['/crossword-list']);
-  }
-
   // Метод для проверки, является ли клетка выбранной
   isSelectedCell(rowIndex: number, colIndex: number): boolean {
     return this.selectedCells.some(
       (cell) => cell.row === rowIndex && cell.col === colIndex
+    );
+  }
+
+  saveCrossword(): void {
+    const crosswordData = {
+      title: this.formData.title,
+      width: this.formData.width,
+      height: this.formData.height,
+      hints: this.formData.hints,
+      fillMethod: this.formData.fillMethod,
+      dictionary: this.formData.dictionary,
+      grid: this.grid,
+      words: this.selectedWords.map((wordObj) => ({
+        word: wordObj.word,
+        definition: this.getWordDefinition(wordObj.word),
+        length: wordObj.length,
+        row: wordObj.cells[0].row,
+        col: wordObj.cells[0].col,
+        direction: this.getWordDirection(wordObj),
+        cells: wordObj.cells,
+      })),
+      clues: this.generateClues(),
+    };
+
+    console.log('Crossword Data:', crosswordData);
+
+    // Отправляем данные на сервер через сервис
+    this.crosswordsService.saveCrossword(crosswordData).subscribe({
+      next: (response) => {
+        console.log('Кроссворд успешно сохранен:', response);
+        this.router.navigate(['/crosswords/library']); // Перенаправляем пользователя после успешного сохранения
+      },
+      error: (error) => {
+        console.error('Ошибка при сохранении кроссворда:', error);
+      },
+      complete: () => {
+        console.log('Процесс сохранения завершен');
+      },
+    });
+  }
+
+  getWordDefinition(word: string): string {
+    // Поиск определения слова в словаре
+    const wordObj = this.dictionary.find((w) => w.word === word);
+    return wordObj ? wordObj.definition : '';
+  }
+
+  getWordDirection(wordObj: {
+    length: number;
+    cells: { row: number; col: number }[];
+  }): string {
+    // Определение направления (горизонталь или вертикаль)
+    const isHorizontal = wordObj.cells[0].row === wordObj.cells[1]?.row;
+    return isHorizontal ? 'across' : 'down';
+  }
+
+  generateClues() {
+    const across: {
+      number: number;
+      clue: string;
+      cells: { row: number; col: number }[];
+    }[] = [];
+    const down: {
+      number: number;
+      clue: string;
+      cells: { row: number; col: number }[];
+    }[] = [];
+
+    this.selectedWords.forEach((wordObj) => {
+      const clue = {
+        number: this.getClueNumber(wordObj),
+        clue: this.getWordDefinition(wordObj.word),
+        cells: wordObj.cells,
+      };
+      if (this.getWordDirection(wordObj) === 'across') {
+        across.push(clue);
+      } else {
+        down.push(clue);
+      }
+    });
+
+    return { across, down };
+  }
+
+  getClueNumber(wordObj: { cells: { row: number; col: number }[] }): number {
+    return (
+      wordObj.cells[0].row * this.formData.width + wordObj.cells[0].col + 1
     );
   }
 }
