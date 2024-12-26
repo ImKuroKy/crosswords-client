@@ -5,6 +5,7 @@
       <div
         class="library__card"
         *ngFor="let crossword of paginatedCrosswords[currentPage]"
+        (click)="playCrossword(crossword.id)"
       >
         <button
           class="library__card-delete-button"

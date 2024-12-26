@@ -1,0 +1,45 @@
+<div>
+  <h2>{{ crosswordData?.title }}</h2>
+  <!-- Название кроссворда -->
+
+  <div class="grid">
+    <div class="grid-container">
+      <div
+        *ngFor="let row of crosswordData.grid; let rowIndex = index"
+        class="grid-row"
+      >
+        <div *ngFor="let cell of row; let colIndex = index" class="grid-cell">
+          <input
+            title="123"
+            *ngIf="cell !== ''"
+            type="text"
+            maxlength="1"
+            [(ngModel)]="gridValues[rowIndex][colIndex]"
+            (input)="onInputChange(rowIndex, colIndex, $event)"
+            class="cell-input"
+          />
+          <!-- Показываем букву, если она есть, и скрываем инпут -->
+          <span *ngIf="cell === ''">{{ cell }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Загаданные слова</h3>
+      <div class="clues-list">
+        <h4>По-горизонтали:</h4>
+        <div *ngFor="let clue of crosswordData?.clues?.across">
+          <strong>{{ clue.number }}:</strong> {{ clue.clue }}
+        </div>
+      </div>
+      <div class="clues-list">
+        <h4>По-вертикали:</h4>
+        <div *ngFor="let clue of crosswordData?.clues?.down">
+          <strong>{{ clue.number }}:</strong> {{ clue.clue }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-button" (click)="saveCrossword()">Save Crossword</button>
+</div>

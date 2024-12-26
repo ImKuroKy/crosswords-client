@@ -10,6 +10,7 @@ import { DevelopersComponent } from './features/about/components/developers/deve
 import { SystemComponent } from './features/about/components/system/system.component';
 import { CrosswordParamsComponent } from './features/crosswords/components/crossword-params/crossword-params.component';
 import { CrosswordCreateComponent } from './features/crosswords/components/crossword-create/crossword-create.component';
+import { CrosswordPlayComponent } from './features/crosswords/components/crossword-play/crossword-play.component';
 
 export const routes: Routes = [
   {
@@ -41,6 +42,11 @@ export const routes: Routes = [
     title: 'Создание кроссворда',
     path: 'crosswords/crossword-create',
     component: CrosswordCreateComponent,
+  },
+  {
+    title: 'Решение кроссворда',
+    path: 'crosswords/crossword-play/:crosswordId',
+    component: CrosswordPlayComponent,
   },
   {
     title: 'Добавить словарь',

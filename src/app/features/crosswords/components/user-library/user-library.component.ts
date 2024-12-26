@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { NotificationComponent } from '../../../../shared/notification/notification.component';
 import { CrosswordsService } from '../../services/crosswords.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 interface Crossword {
   id: string;
@@ -22,7 +23,7 @@ export class UserLibraryComponent implements OnInit {
   currentPage = 0;
   totalPages: number[] = [];
 
-  constructor(private crosswordsService: CrosswordsService) {}
+  constructor(private crosswordsService: CrosswordsService, private router: Router) {}
 
   ngOnInit() {
     this.fetchCrosswords();
@@ -58,6 +59,11 @@ export class UserLibraryComponent implements OnInit {
         );
       },
     });
+  }
+  
+  // Переходим на компонент crossword-play с ID кроссворда
+  playCrossword(crosswordId: string) {
+    this.router.navigate(['/crosswords/crossword-play', crosswordId]); 
   }
 
   paginateCrosswords(): void {
