@@ -1,5 +1,5 @@
 <div>
-  <h2>{{ crosswordData?.title }}</h2>
+  <h2>{{ crosswordData?.title }} <span *ngIf="isGameCompleted" class="completion-message">Crossword completed!</span></h2>
   <!-- Название кроссворда -->
 
   <div class="grid">
@@ -14,7 +14,9 @@
             *ngIf="cell !== ''"
             type="text"
             maxlength="1"
+            [value]="userInputs[rowIndex - colIndex]"
             [(ngModel)]="gridValues[rowIndex][colIndex]"
+            [disabled]="!cell"
             (input)="onInputChange(rowIndex, colIndex, $event)"
             class="cell-input"
           />
@@ -29,13 +31,13 @@
       <div class="clues-list">
         <h4>По-горизонтали:</h4>
         <div *ngFor="let clue of crosswordData?.clues?.across">
-          <strong>{{ clue.number }}:</strong> {{ clue.clue }}
+          <strong [ngClass]="{'solved': isWordSolved(clue)}">{{ clue.number }}:</strong> {{ clue.clue }}
         </div>
       </div>
       <div class="clues-list">
         <h4>По-вертикали:</h4>
         <div *ngFor="let clue of crosswordData?.clues?.down">
-          <strong>{{ clue.number }}:</strong> {{ clue.clue }}
+          <strong [ngClass]="{'solved': isWordSolved(clue)}">{{ clue.number }}:</strong> {{ clue.clue }}
         </div>
       </div>
     </div>

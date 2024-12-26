@@ -1,3 +1,9 @@
+.completion-message {
+  color: green;
+  font-weight: bold;
+  margin-left: 10px;
+}
+
 .grid {
   display: flex;
   justify-content: center;
@@ -44,6 +50,11 @@
 .grid-cell input:disabled {
   background-color: #e0e0e0; /* Фон для заблокированных input */
   color: #aaa;
+}
+
+.solved {
+  text-decoration: line-through;
+  color: #888;
 }
 
 .save-button {
