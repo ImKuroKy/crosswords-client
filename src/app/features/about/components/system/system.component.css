@@ -92,3 +92,47 @@
     padding: 8px 16px;
   }
 }
+
+/* Заголовок h1: большой размер шрифта и выравнивание по центру */
+h1 {
+  font-size: 36px; /* Увеличиваем размер шрифта */
+  text-align: center; /* Центрируем заголовок по горизонтали */
+  margin: 40px 0 60px 0; /* Добавляем отступ сверху, чтобы он не прилипал к верху экрана */
+}
+
+/* Все параграфы и заголовки h4: отступ от левой границы */
+h4,
+h2,
+h3,
+p {
+  font-size: 24px;
+  margin: 40px 30px 30px 30px; /* Отступ от левой границы */
+}
+
+/* Устанавливаем общий размер шрифта для body */
+body {
+  font-size: 12px; /* Размер шрифта для всего текста */
+}
+
+/* Остальные стили остаются без изменений */
+ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+li {
+  margin: 10px 0;
+}
+a {
+  margin-left: 40px;
+  font-size: 24px;
+  text-decoration: none;
+  color: #007bff;
+  cursor: pointer;
+}
+img {
+  display: block;
+  margin: 0 auto;
+}
+a:hover {
+  text-decoration: underline;
+}

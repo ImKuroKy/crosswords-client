@@ -1,3 +1,28 @@
+.header-container {
+  background-color: white;
+  padding: 50px 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  background-color: white;
+  height: auto;
+  max-height: 90vh;
+  display: flex;
+  justify-content: center;
+}
+
+.grid-container {
+  gap: 10px;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: row;
+  margin: 0 20px;
+  border-color: black;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .grid-row {
   display: flex;
 }
@@ -21,4 +46,17 @@
 
 .selected-cell {
   background-color: lightgray; /* Серый цвет для выделенной клетки */
+}
+
+.save-button {
+  padding: 20px 20px;
+  width: 150px;
+  height: 50px;
+}
+
+.button-container {
+  background-color: white;
+  padding: 50px 50px;
+  display: flex;
+  justify-content: center;
 }

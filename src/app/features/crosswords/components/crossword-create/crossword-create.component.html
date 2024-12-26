@@ -1,6 +1,8 @@
-<div>
-  <h2>Create Crossword</h2>
-  <div>
+<div class="header-container">
+  <h2 class="header-container:">Create Crossword</h2>
+</div>
+<div class="grid">
+  <div class="grid-container">
     <div>
       <h3>Grid</h3>
       <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
@@ -32,5 +34,7 @@
       <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
   </div>
-  <button (click)="saveCrossword()">Save Crossword</button>
+</div>
+<div class="button-container">
+  <button class="save-button" (click)="saveCrossword()">Save Crossword</button>
 </div>
