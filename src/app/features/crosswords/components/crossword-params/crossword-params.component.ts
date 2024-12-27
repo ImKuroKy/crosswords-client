@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DictionaryService } from '../../services/dictionaries.service';
 import { Router } from '@angular/router';
+import { CrosswordGeneratorService } from '../../services/generation.service';
+import { CrosswordsService } from '../../services/crosswords.service';
 
 @Component({
   selector: 'app-crossword-params',
@@ -32,7 +34,9 @@ export class CrosswordParamsComponent implements OnInit {
 
   constructor(
     private dictionaryService: DictionaryService,
-    private router: Router
+    private crosswordsService: CrosswordsService,
+    private router: Router,
+    private crosswordGeneratorService: CrosswordGeneratorService
   ) {}
 
   ngOnInit(): void {
@@ -94,7 +98,6 @@ export class CrosswordParamsComponent implements OnInit {
 
   onSubmit(): void {
     if (this.validateForm()) {
-      // Преобразуем formData в обычный объект
       const formData = {
         title: this.formData.title,
         width: this.formData.width,
@@ -105,25 +108,55 @@ export class CrosswordParamsComponent implements OnInit {
       };
 
       if (this.formData.fillMethod === 'manual') {
-        // Сохраняем данные в localStorage
         localStorage.setItem('crosswordFormData', JSON.stringify(formData));
-        // Переходим на другую страницу
         this.router.navigate(['crosswords/crossword-create']);
       } else {
-        // Преобразование formData в FormData
-        const formData = new FormData();
-        formData.append('title', this.formData.title);
-        formData.append('width', this.formData.width.toString());
-        formData.append('height', this.formData.height.toString());
-        formData.append('hints', this.formData.hints.toString());
-        formData.append('dictionary', this.formData.dictionary);
-        formData.append('fillMethod', this.formData.fillMethod);
-
-        // Отправка данных на сервер для автоматического заполнения
         this.dictionaryService
-          .createCrossword(formData)
-          .subscribe((response) => {
-            this.router.navigate(['/crossword-list']);
+          .getDictionaryByName(this.formData.dictionary)
+          .subscribe({
+            next: (data) => {
+              try {
+                const parsedContent = JSON.parse(data.content);
+                const dictionary = parsedContent.words || [];
+
+                const crossword =
+                  this.crosswordGeneratorService.generateCrossword(
+                    this.formData.width,
+                    this.formData.height,
+                    dictionary
+                  );
+
+                const crosswordData = {
+                  title: this.formData.title,
+                  width: this.formData.width,
+                  height: this.formData.height,
+                  hints: this.formData.hints,
+                  fillMethod: this.formData.fillMethod,
+                  dictionary: this.formData.dictionary,
+                  grid: crossword.grid,
+                  words: crossword.words,
+                  clues: crossword.clues,
+                };
+
+                this.crosswordsService.saveCrossword(crosswordData).subscribe({
+                  next: () => {
+                    this.router.navigate(['/crossword-list']);
+                  },
+                  error: (error) => {
+                    this.formErrors.dictionary =
+                      'Ошибка при сохранении кроссворда';
+                    console.error('Error saving crossword:', error);
+                  },
+                });
+              } catch (error) {
+                this.formErrors.dictionary = 'Ошибка при обработке словаря';
+                console.error('Error parsing dictionary content:', error);
+              }
+            },
+            error: (error) => {
+              this.formErrors.dictionary = 'Ошибка при загрузке словаря';
+              console.error('Error loading dictionary:', error);
+            },
           });
       }
     }
