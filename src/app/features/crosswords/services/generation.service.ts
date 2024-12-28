@@ -1,182 +1,415 @@
 import { Injectable } from '@angular/core';
 
-interface WordEntry {
+interface DictionaryEntry {
   word: string;
   definition: string;
 }
 
-interface CrosswordCell {
-  col: number;
+/**
+ * Описание размещённого слова в кроссворде.
+ */
+interface CrosswordWord {
+  word: string;
+  definition: string;
   row: number;
-  letter: string | null;
-}
-
-interface Clue {
-  clue: string;
-  cells: CrosswordCell[];
-  number: number;
-}
-
-interface Crossword {
-  grid: string[][];
-  clues: {
-      down: Clue[];
-      across: Clue[];
-  };
-  hints: number;
-  title: string;
-  width: number;
-  height: number;
-  words: {
-      col: number;
-      row: number;
-      word: string;
-      cells: CrosswordCell[];
-      length: number;
-      direction: 'across' | 'down';
-      definition: string;
-  }[];
-  dictionary: string;
-  fillMethod: string;
+  col: number;
+  length: number;
+  direction: 'across' | 'down';
+  cells: { row: number; col: number }[];
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class CrosswordGeneratorService {
+  /**
+   * Генерация "классического" кроссворда, избегающего побочных слов.
+   */
+  generateCrossword(
+    width: number,
+    height: number,
+    dictionary: DictionaryEntry[]
+  ): {
+    grid: string[][];
+    words: CrosswordWord[];
+    clues: {
+      across: Array<{
+        clue: string;
+        cells: { row: number; col: number }[];
+        number: number;
+      }>;
+      down: Array<{
+        clue: string;
+        cells: { row: number; col: number }[];
+        number: number;
+      }>;
+    };
+  } {
+    // Создаём пустую сетку
+    const grid: string[][] = Array.from({ length: height }, () =>
+      Array.from({ length: width }, () => '')
+    );
 
-  constructor() { }
+    // Список уже размещённых слов
+    const placedWords: CrosswordWord[] = [];
 
-  private convertGrid(grid: (string | null)[][]): string[][] {
-      return grid.map(row => row.map(cell => cell === null ? '' : cell));
-  }
+    // Преобразуем все слова к нижнему регистру (чтобы не путать буквы)
+    // Или можно оставить как есть — решать вам.
+    const entries = dictionary.map((e) => ({
+      word: e.word.toLowerCase(),
+      definition: e.definition,
+    }));
 
-  private canPlaceWord(word: string, row: number, col: number, direction: 'across' | 'down', grid: (string | null)[][], height: number, width: number): boolean {
-      const length = word.length;
+    // 1) Берём первое слово (лучше всего — самое длинное; здесь упрощённо — просто первое по списку)
+    if (entries.length === 0) {
+      return { grid, words: [], clues: { across: [], down: [] } };
+    }
 
-      for (let i = 0; i < length; i++) {
-          const r = direction === 'across' ? row : row + i;
-          const c = direction === 'across' ? col + i : col;
+    // Возьмём первое слово и попытаемся разместить его горизонтально в центре
+    const firstEntry = entries[0];
+    const firstWord = firstEntry.word;
+    const firstDefinition = firstEntry.definition;
 
-          if (r >= height || c >= width || (grid[r][c] !== null && grid[r][c] !== word[i])) {
-              return false;
-          }
+    // Простейшая проверка: если слово длиннее ширины, придётся разместить вертикально (или сделать проверку, что оно влезает)
+    let direction: 'across' | 'down' = 'across';
+    if (firstWord.length > width) {
+      // Пробуем поставить его вертикально
+      direction = 'down';
+      if (firstWord.length > height) {
+        // Слово вообще не влезает...
+        // Возвращаем пустой результат
+        return { grid, words: [], clues: { across: [], down: [] } };
+      }
+    }
 
-          // Check adjacent cells
-          if (direction === 'across') {
-              if ((c > 0 && grid[r][c - 1] !== null && grid[r][c - 1] !== word[i - 1]) ||
-                  (c < width - 1 && grid[r][c + 1] !== null && grid[r][c + 1] !== word[i + 1])) {
-                  return false;
-              }
-              if ((r > 0 && grid[r - 1][c] !== null) || (r < height - 1 && grid[r + 1][c] !== null)) {
-                  return false;
-              }
-          } else {
-              if ((r > 0 && grid[r - 1][c] !== null && grid[r - 1][c] !== word[i - 1]) ||
-                  (r < height - 1 && grid[r + 1][c] !== null && grid[r + 1][c] !== word[i + 1])) {
-                  return false;
-              }
-              if ((c > 0 && grid[r][c - 1] !== null) || (c < width - 1 && grid[r][c + 1] !== null)) {
-                  return false;
-              }
-          }
+    // Координаты "центра" (примерный)
+    const midRow = Math.floor(height / 2);
+    const midCol = Math.floor(width / 2);
+
+    // Вычислим старт так, чтобы слово целиком вошло
+    let startRow = midRow;
+    let startCol = midCol;
+
+    if (direction === 'across') {
+      startCol = Math.max(0, midCol - Math.floor(firstWord.length / 2));
+    } else {
+      startRow = Math.max(0, midRow - Math.floor(firstWord.length / 2));
+    }
+
+    // Размещаем первое слово
+    this.placeWordInGrid(
+      grid,
+      startRow,
+      startCol,
+      firstWord,
+      direction
+    );
+
+    const cells = this.computeCells(startRow, startCol, firstWord.length, direction);
+    placedWords.push({
+      word: firstWord,
+      definition: firstDefinition,
+      row: startRow,
+      col: startCol,
+      length: firstWord.length,
+      direction,
+      cells,
+    });
+
+    // 2) Размещаем все последующие слова
+    for (let i = 1; i < entries.length; i++) {
+      const { word, definition } = entries[i];
+      // Проверяем, не уже ли размещено (допустим, кто-то добавил дубли)
+      if (placedWords.some((w) => w.word === word)) {
+        continue; // Пропускаем дубликат
       }
 
-      return true;
-  }
+      // Пытаемся разместить, перебирая все возможные пересечения с уже размещёнными словами
+      let placed = false;
 
-  private findIntersection(word: string, grid: (string | null)[][], height: number, width: number): { row: number, col: number, direction: 'across' | 'down' } | null {
-      for (let row = 0; row < height; row++) {
-          for (let col = 0; col < width; col++) {
-              for (let i = 0; i < word.length; i++) {
-                  const acrossStart = col - i;
-                  if (acrossStart >= 0 && this.canPlaceWord(word, row, acrossStart, 'across', grid, height, width)) {
-                      return { row, col: acrossStart, direction: 'across' };
-                  }
+      outerLoop: for (const existing of placedWords) {
+        // Перебираем буквы нового слова
+        for (let newWordIndex = 0; newWordIndex < word.length; newWordIndex++) {
+          const newChar = word[newWordIndex];
 
-                  const downStart = row - i;
-                  if (downStart >= 0 && this.canPlaceWord(word, downStart, col, 'down', grid, height, width)) {
-                      return { row: downStart, col, direction: 'down' };
-                  }
+          // Перебираем буквы уже размещённого слова
+          for (let existingIndex = 0; existingIndex < existing.word.length; existingIndex++) {
+            const existingChar = existing.word[existingIndex];
+
+            // Ищем совпадение букв
+            if (newChar === existingChar) {
+              // Предположим, что хотим пересечься в этих двух буквах
+              // Если existing.direction === 'across', значит existingChar лежит на [existing.row, existing.col + existingIndex]
+              // Если 'down', то на [existing.row + existingIndex, existing.col]
+
+              const existingRow =
+                existing.direction === 'across'
+                  ? existing.row
+                  : existing.row + existingIndex;
+              const existingCol =
+                existing.direction === 'across'
+                  ? existing.col + existingIndex
+                  : existing.col;
+
+              // Теперь в зависимости от того, куда мы хотим поставить новое слово, 
+              // мы можем «вертикально» или «горизонтально» расположить его
+              // Чтобы пересечься по букве newWordIndex
+              // Если мы ориентируем слово "across", значит совпавшая буква должна лежать на [existingRow, existingCol], 
+              // но смещённая на -newWordIndex по колонки
+              // row = existingRow
+              // col = existingCol - newWordIndex
+              // При этом проверяем, не выходит ли за границы, не создаём ли побочные слова и т.п.
+
+              // Попробуем "across" вариант
+              const acrossStartCol = existingCol - newWordIndex;
+              const acrossStartRow = existingRow;
+              if (
+                this.canPlaceWordNoSideWords(
+                  grid,
+                  word,
+                  acrossStartRow,
+                  acrossStartCol,
+                  'across',
+                  newWordIndex
+                )
+              ) {
+                // Размещаем
+                this.placeWordInGrid(grid, acrossStartRow, acrossStartCol, word, 'across');
+                const newCells = this.computeCells(
+                  acrossStartRow,
+                  acrossStartCol,
+                  word.length,
+                  'across'
+                );
+                placedWords.push({
+                  word,
+                  definition,
+                  row: acrossStartRow,
+                  col: acrossStartCol,
+                  length: word.length,
+                  direction: 'across',
+                  cells: newCells,
+                });
+                placed = true;
+                break outerLoop;
               }
+
+              // Попробуем "down" вариант
+              const downStartRow = existingRow - newWordIndex;
+              const downStartCol = existingCol;
+              if (
+                this.canPlaceWordNoSideWords(
+                  grid,
+                  word,
+                  downStartRow,
+                  downStartCol,
+                  'down',
+                  newWordIndex
+                )
+              ) {
+                // Размещаем
+                this.placeWordInGrid(grid, downStartRow, downStartCol, word, 'down');
+                const newCells = this.computeCells(
+                  downStartRow,
+                  downStartCol,
+                  word.length,
+                  'down'
+                );
+                placedWords.push({
+                  word,
+                  definition,
+                  row: downStartRow,
+                  col: downStartCol,
+                  length: word.length,
+                  direction: 'down',
+                  cells: newCells,
+                });
+                placed = true;
+                break outerLoop;
+              }
+            }
           }
+        }
       }
-      return null;
+    }
+
+    // Формируем подсказки (упрощённая логика)
+    const clues = this.buildClues(placedWords);
+
+    return {
+      grid,
+      words: placedWords,
+      clues,
+    };
   }
 
-  private placeWord(word: string, row: number, col: number, direction: 'across' | 'down', grid: (string | null)[][], words: any[], clues: { down: Clue[], across: Clue[] }, wordNumber: number, dictionary: WordEntry[]) {
-      const length = word.length;
-      const cells: CrosswordCell[] = [];
-
-      for (let i = 0; i < length; i++) {
-          const r = direction === 'across' ? row : row + i;
-          const c = direction === 'across' ? col + i : col;
-          grid[r][c] = word[i];
-          cells.push({ col: c, row: r, letter: word[i] });
+  /**
+   * Реально "прописываем" слово в сетку (grid) по заданным координатам и направлению.
+   */
+  private placeWordInGrid(
+    grid: string[][],
+    startRow: number,
+    startCol: number,
+    word: string,
+    direction: 'across' | 'down'
+  ): void {
+    if (direction === 'across') {
+      for (let i = 0; i < word.length; i++) {
+        grid[startRow][startCol + i] = word[i];
       }
-
-      words.push({
-          col,
-          row,
-          word,
-          cells,
-          length,
-          direction,
-          definition: dictionary.find(entry => entry.word === word)!.definition
-      });
-
-      const clueList = clues[direction];
-      clueList.push({
-          clue: dictionary.find(entry => entry.word === word)!.definition,
-          cells,
-          number: wordNumber
-      });
+    } else {
+      for (let i = 0; i < word.length; i++) {
+        grid[startRow + i][startCol] = word[i];
+      }
+    }
   }
 
-  generateCrossword(width: number, height: number, dictionary: WordEntry[]): Crossword {
-      const grid: (string | null)[][] = Array.from({ length: height }, () => Array(width).fill(null));
+  /**
+   * Возвращает массив координат [row,col] для слова заданной длины, начиная от (startRow, startCol) в направлении dir.
+   */
+  private computeCells(
+    startRow: number,
+    startCol: number,
+    length: number,
+    direction: 'across' | 'down'
+  ): { row: number; col: number }[] {
+    const cells = [];
+    for (let i = 0; i < length; i++) {
+      const r = direction === 'down' ? startRow + i : startRow;
+      const c = direction === 'across' ? startCol + i : startCol;
+      cells.push({ row: r, col: c });
+    }
+    return cells;
+  }
 
-      const clues = {
-          down: [] as Clue[],
-          across: [] as Clue[]
-      };
+  /**
+   * Проверяем, можно ли разместить слово word в позиции (startRow, startCol) c направлением dir,
+   * учитывая, что пересечение происходит на индексе intersectIndex (букве).
+   * Важное: Проверяем отсутствие побочных слов!
+   */
+  private canPlaceWordNoSideWords(
+    grid: string[][],
+    word: string,
+    startRow: number,
+    startCol: number,
+    dir: 'across' | 'down',
+    intersectIndex: number
+  ): boolean {
+    const height = grid.length;
+    const width = grid[0].length;
 
-      const words = [] as {
-          col: number;
-          row: number;
-          word: string;
-          cells: CrosswordCell[];
-          length: number;
-          direction: 'across' | 'down';
-          definition: string;
-      }[];
+    // Проверяем границы
+    if (dir === 'across') {
+      if (startCol < 0 || startCol + word.length > width) {
+        return false;
+      }
+      // row тоже не должен быть за границей
+      if (startRow < 0 || startRow >= height) {
+        return false;
+      }
+    } else {
+      if (startRow < 0 || startRow + word.length > height) {
+        return false;
+      }
+      // col тоже не должен выходить за границы
+      if (startCol < 0 || startCol >= width) {
+        return false;
+      }
+    }
 
-      let wordNumber = 1;
+    // Проверяем каждую букву
+    for (let i = 0; i < word.length; i++) {
+      const r = dir === 'down' ? startRow + i : startRow;
+      const c = dir === 'across' ? startCol + i : startCol;
 
-      dictionary.sort((a, b) => b.word.length - a.word.length); // Sort words by length (longest first)
-
-      for (const entry of dictionary) {
-          const word = entry.word;
-
-          const position = this.findIntersection(word, grid, height, width);
-
-          if (position) {
-              this.placeWord(word, position.row, position.col, position.direction, grid, words, clues, wordNumber++, dictionary);
-          } else {
-              console.log(`Unable to place word: ${word}`);
-          }
+      // Если в клетке уже есть буква, и она не совпадает с новой — нельзя
+      if (grid[r][c] !== '' && grid[r][c] !== word[i]) {
+        return false;
       }
 
-      return {
-          grid: this.convertGrid(grid),
-          clues,
-          hints: 0,
-          title: '',
-          width,
-          height,
-          words,
-          dictionary: '',
-          fillMethod: 'manual'
-      };
+      // + проверяем «побочные» клетки (слева/справа или сверху/снизу), чтобы не создавать лишние слова
+      // Исключаем ту клетку, где реальное пересечение (i = intersectIndex), там у нас другая логика
+      // Но если там есть буква, она должна совпадать.
+      if (dir === 'across') {
+        // Проверяем верх/низ, если есть буквы — значит потенциально создаём побочное слово
+        // Разрешаем букву только в случае, когда i=intersectIndex, но тогда это уже должно быть то самое пересечение
+        if (this.hasLetter(grid, r - 1, c) || this.hasLetter(grid, r + 1, c)) {
+          // Если i != intersectIndex — значит это побочное слово
+          // Если i == intersectIndex и там есть буквы, мы должны проверить, что это часть пересечения.
+          // Но упрощённо запретим вообще, кроме пустоты
+          if (i !== intersectIndex) {
+            return false;
+          }
+        }
+      } else {
+        // dir === 'down'
+        // Проверяем слева/справа
+        if (this.hasLetter(grid, r, c - 1) || this.hasLetter(grid, r, c + 1)) {
+          if (i !== intersectIndex) {
+            return false;
+          }
+        }
+      }
+    }
+
+    // Дополнительно проверим «пустую» клетку до и после слова,
+    // чтобы не соединяться «впритык» с другими словами
+    if (dir === 'across') {
+      // Клетка слева от startCol
+      if (this.hasLetter(grid, startRow, startCol - 1)) {
+        return false;
+      }
+      // Клетка справа от endCol
+      const endCol = startCol + word.length - 1;
+      if (this.hasLetter(grid, startRow, endCol + 1)) {
+        return false;
+      }
+    } else {
+      // dir === 'down'
+      if (this.hasLetter(grid, startRow - 1, startCol)) {
+        return false;
+      }
+      const endRow = startRow + word.length - 1;
+      if (this.hasLetter(grid, endRow + 1, startCol)) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Вспомогательный метод: true, если в (r,c) в пределах сетки есть буква (не пустая).
+   */
+  private hasLetter(grid: string[][], r: number, c: number): boolean {
+    if (r < 0 || r >= grid.length || c < 0 || c >= grid[0].length) {
+      return false;
+    }
+    return grid[r][c] !== '';
+  }
+
+  /**
+   * Формируем объект с классическими "подсказками" (clues).
+   * Упрощённо: просто группируем по direction и даём им фиктивные номера.
+   */
+  private buildClues(placedWords: CrosswordWord[]) {
+    const acrossWords = placedWords.filter((w) => w.direction === 'across');
+    const downWords = placedWords.filter((w) => w.direction === 'down');
+
+    // Условно нумеруем по порядку
+    const clues = {
+      across: acrossWords.map((w, idx) => ({
+        clue: w.definition,
+        cells: w.cells,
+        number: 100 + idx,
+      })),
+      down: downWords.map((w, idx) => ({
+        clue: w.definition,
+        cells: w.cells,
+        number: 200 + idx,
+      })),
+    };
+
+    return clues;
   }
 }

@@ -138,9 +138,10 @@ export class CrosswordParamsComponent implements OnInit {
                   clues: crossword.clues,
                 };
 
+                console.log(crosswordData);
                 this.crosswordsService.saveCrossword(crosswordData).subscribe({
                   next: () => {
-                    this.router.navigate(['/crossword-list']);
+                    this.router.navigate(['/crosswords/library']);
                   },
                   error: (error) => {
                     this.formErrors.dictionary =
