@@ -1,49 +1,67 @@
-<div >
-  <h2>{{ crosswordData?.title }} <span *ngIf="isGameCompleted" class="completion-message">Crossword completed!</span></h2>
-  <!-- Название кроссворда -->
+<div>
+  <h2>
+    {{ crosswordData?.title }}
+    <span *ngIf="isGameCompleted" class="completion-message">
+      Crossword completed!
+    </span>
+  </h2>
 
   <div class="grid">
+    <!-- Сетка с инпутами -->
     <div class="grid-container">
       <div
-        *ngFor="let row of crosswordData.grid; let rowIndex = index"
+        *ngFor="let row of crosswordData?.grid; let rowIndex = index"
         class="grid-row"
       >
-        <div *ngFor="let cell of row; let colIndex = index" class="grid-cell">
+        <div
+          *ngFor="let cell of row; let colIndex = index"
+          class="grid-cell"
+        >
+          <!-- Если ячейка "пустая" => выводим серую "чёрную" клетку -->
+          <span *ngIf="cell === ''" class="blocked-cell"></span>
+
+          <!-- Иначе (в ячейке есть буква в grid) => даём инпут -->
           <input
-            title="123"
+            title="noInput"
             *ngIf="cell !== ''"
             type="text"
             maxlength="1"
-            [value]="userInputs[rowIndex - colIndex]"
-            [(ngModel)]="gridValues[rowIndex][colIndex]"
-            [disabled]="!cell"
+            [(ngModel)]="userInputs[rowIndex + '-' + colIndex]"
             (input)="onInputChange(rowIndex, colIndex, $event)"
             class="cell-input"
           />
-          <!-- Показываем букву, если она есть, и скрываем инпут -->
-          <span *ngIf="cell === ''">{{ cell }}</span>
         </div>
       </div>
     </div>
 
+    <!-- Список подсказок -->
     <div>
       <h3>Загаданные слова</h3>
       <div class="clues-list">
         <h4>По-горизонтали:</h4>
         <div *ngFor="let clue of crosswordData?.clues?.across">
-          <strong [ngClass]="{'solved': isWordSolved(clue)}">{{ clue.number }}:</strong> {{ clue.clue }}
+          <strong [ngClass]="{'solved': isWordSolved(clue)}">
+            {{ clue.number }}:
+          </strong>
+          {{ clue.clue }}
         </div>
       </div>
       <div class="clues-list">
         <h4>По-вертикали:</h4>
         <div *ngFor="let clue of crosswordData?.clues?.down">
-          <strong [ngClass]="{'solved': isWordSolved(clue)}">{{ clue.number }}:</strong> {{ clue.clue }}
+          <strong [ngClass]="{'solved': isWordSolved(clue)}">
+            {{ clue.number }}:
+          </strong>
+          {{ clue.clue }}
         </div>
       </div>
     </div>
   </div>
-<div class="container">
 
-  <button class="save-button" (click)="saveCrossword()">Save Crossword</button>
-</div>
+  <!-- Кнопка сохранения (по желанию) -->
+  <div class="container">
+    <button class="save-button" (click)="saveCrossword()">
+      Save Crossword
+    </button>
+  </div>
 </div>

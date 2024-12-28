@@ -94,7 +94,7 @@ export class PublicLibraryComponent implements OnInit {
   }
 
   paginateCrosswords(): void {
-    const pageSize = 9;
+    const pageSize = 12;
     this.paginatedCrosswords = [];
     for (let i = 0; i < this.crosswords.length; i += pageSize) {
       this.paginatedCrosswords.push(this.crosswords.slice(i, i + pageSize));

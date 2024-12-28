@@ -4,14 +4,16 @@
   margin-left: 10px;
 }
 
+/* Общая обёртка сетки */
 .grid {
   display: flex;
   justify-content: center;
+  margin-bottom: 20px;
 }
 
+/* Контейнер, где лежит сама таблица */
 .grid-container {
-  margin: 0 20px;
-  border-color: black;
+  margin-right: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -24,45 +26,50 @@
   height: 40px;
   border: 1px solid #ccc;
   text-align: center;
-  line-height: 40px;
+  vertical-align: middle; /* Для выравнивания */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Инпут для вводимых букв */
 .cell-input {
   width: 100%;
   height: 100%;
   text-align: center;
   font-size: 18px;
-  background-color: white;
   border: none;
+  background-color: #ffffff;
 }
 
-.grid-cell span {
+/* Серая "заблокированная" клетка (пустая в grid) */
+.blocked-cell {
   display: inline-block;
   width: 100%;
   height: 100%;
-  line-height: 40px;
-  font-size: 18px;
-  background-color: #e0e0e0; /* Тёмный фон для пустых клеток */
-  text-align: center;
-  color: #333;
+  background-color: #e0e0e0;
 }
 
-.grid-cell input:disabled {
-  background-color: #e0e0e0; /* Фон для заблокированных input */
+/* Если инпут задизейблен, пусть фон будет серый и цвет буквы тусклый */
+.cell-input:disabled {
+  background-color: #e0e0e0;
   color: #aaa;
 }
 
+/* Зачёркнутое слово, если оно решено */
 .solved {
   text-decoration: line-through;
   color: #888;
 }
 
+/* Кнопка сохранения */
 .save-button {
-  padding: 20px 20px;
+  padding: 10px 20px;
   width: 150px;
-  height: 50px;
+  font-size: 16px;
 }
 
+/* Центровка кнопки */
 .container {
   display: flex;
   justify-content: center;
