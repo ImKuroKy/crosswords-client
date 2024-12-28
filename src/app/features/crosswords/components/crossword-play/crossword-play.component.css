@@ -4,17 +4,15 @@
   margin-left: 10px;
 }
 
-/* Общая обёртка сетки */
 .grid {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
 
-/* Контейнер, где лежит сама таблица */
 .grid-container {
   margin-right: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px #ccc;
 }
 
 .grid-row {
@@ -22,41 +20,51 @@
 }
 
 .grid-cell {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   border: 1px solid #ccc;
-  text-align: center;
-  vertical-align: middle; /* Для выравнивания */
+  /* Можно сразу сделать position: relative
+     но мы тут вложим .cell-content с relative */
   display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-/* Инпут для вводимых букв */
-.cell-input {
+/* Вспомогательный блок, чтобы удобно позиционировать clue-number */
+.cell-content {
+  position: relative;
   width: 100%;
   height: 100%;
-  text-align: center;
-  font-size: 18px;
-  border: none;
-  background-color: #ffffff;
+  border: 1px solid #ccc;
 }
 
-/* Серая "заблокированная" клетка (пустая в grid) */
+/* Номер (подсказка) в левом верхнем углу */
+.clue-number {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: #000;
+}
+
+/* Для заблокированных (пустых) клеток */
 .blocked-cell {
   display: inline-block;
   width: 100%;
   height: 100%;
   background-color: #e0e0e0;
+  box-shadow: 0 4px 8px #ccc;
 }
 
-/* Если инпут задизейблен, пусть фон будет серый и цвет буквы тусклый */
-.cell-input:disabled {
-  background-color: #e0e0e0;
-  color: #aaa;
+/* Инпут для букв */
+.cell-input {
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  font-size: 28px;
+  border: none;
+  background-color: #ffffff;
 }
 
-/* Зачёркнутое слово, если оно решено */
+/* Зачёркнутое слово, если решено */
 .solved {
   text-decoration: line-through;
   color: #888;
@@ -69,7 +77,7 @@
   font-size: 16px;
 }
 
-/* Центровка кнопки */
+/* Контейнер для кнопки */
 .container {
   display: flex;
   justify-content: center;
