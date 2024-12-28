@@ -45,7 +45,7 @@
 }
 
 .selected-cell {
-  background-color: lightgray; /* Серый цвет для выделенной клетки */
+  background-color: lightgray; 
 }
 
 .save-button {
@@ -59,4 +59,9 @@
   padding: 50px 50px;
   display: flex;
   justify-content: center;
+}
+
+.select {
+  width: 250px;
+  height: 40px;
 }

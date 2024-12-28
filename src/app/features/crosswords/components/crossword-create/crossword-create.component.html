@@ -1,6 +1,7 @@
 <div class="header-container">
-  <h2 class="header-container:">Create Crossword</h2>
+  <h2>Create Crossword</h2>
 </div>
+
 <div class="grid">
   <div class="grid-container">
     <div>
@@ -18,23 +19,44 @@
         </div>
       </div>
     </div>
+
     <div>
       <h3>Selected Words</h3>
-      <div *ngFor="let wordObj of selectedWords">
-        <select title="none" (change)="selectWord($event, wordObj)">
-          <option value="" disabled selected>Choose a word</option>
+
+      <!-- Перебираем "непроставленные" слова (т. е. у которых word === '') -->
+      <div *ngFor="let wordObj of selectedWords" class="selected-word-row">
+        <button
+          type="button"
+          class="remove-button"
+          (click)="removeSelectedWord(wordObj)"
+        >
+          X
+        </button>
+
+        <select
+          title="noTitle"
+          class="select"
+          [(ngModel)]="wordObj.word"
+          (change)="selectWord($event, wordObj)"
+        >
+          <option value="">Выберите слово</option>
           <option
-            *ngFor="let word of filterWords(wordObj.cells)"
-            [value]="word.word"
+            *ngFor="let w of filterWords(wordObj.cells, wordObj)"
+            [value]="w.word"
           >
-            {{ word.word }}
+            {{ w.word }}
           </option>
         </select>
       </div>
-      <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+
+      <!-- Сообщение об ошибке -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
     </div>
   </div>
 </div>
+
 <div class="button-container">
   <button class="save-button" (click)="saveCrossword()">Save Crossword</button>
 </div>
