@@ -23,7 +23,7 @@ interface DictionaryWord {
 interface SelectedWordObj {
   length: number;
   cells: { row: number; col: number }[];
-  word: string; 
+  word: string;
 }
 
 @Component({
@@ -69,18 +69,15 @@ export class CrosswordEditComponent implements OnInit {
 
   ngOnInit(): void {
     // Получаем id кроссворда из роутера
-    this.crosswordId = this.route.snapshot.paramMap.get('id') || '';
+    this.crosswordId = this.route.snapshot.paramMap.get('crosswordId') || '';
+    console.log('Fetched crosswordId:', this.crosswordId); // Логируем ID
 
     // Грузим данные кроссворда с сервера
     this.fetchCrosswordData();
-
-    // При желании, можно грузить dictionary позже (или параллельно)
-    // либо вытащить из кроссворда, если оно сохранено.
-    this.loadDictionary();
   }
 
   fetchCrosswordData(): void {
-    this.crosswordsService.getCrosswordById(this.crosswordId).subscribe({
+    this.crosswordsService.getPublicCrosswordById(this.crosswordId).subscribe({
       next: (response: any) => {
         // Предположим, сервер возвращает:
         // {
@@ -99,8 +96,28 @@ export class CrosswordEditComponent implements OnInit {
         this.formData.width = response.width;
         this.formData.height = response.height;
         this.formData.hints = response.hints || 0;
-        this.formData.dictionary = response.dictionary || '';
+        this.formData.dictionary = response.dictionary;
         this.formData.fillMethod = response.fillMethod || 'manual';
+
+        this.dictionaryService
+          .getDictionaryByName(this.formData.dictionary)
+          .subscribe({
+            next: (data) => {
+              console.log(data);
+              try {
+                const parsedContent = JSON.parse(data.content);
+                this.dictionary = parsedContent.words || [];
+                console.log('Dictionary loaded:', this.dictionary);
+              } catch (error) {
+                this.errorMessage = 'Error parsing dictionary content';
+                console.error('Error parsing dictionary content:', error);
+              }
+            },
+            error: (error) => {
+              this.errorMessage = 'Error loading dictionary';
+              console.error('Error loading dictionary:', error);
+            },
+          });
 
         // Сетка
         this.grid = response.grid; // уже готовый массив letters
@@ -114,27 +131,6 @@ export class CrosswordEditComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to fetch crossword data', err);
-      },
-    });
-  }
-
-  loadDictionary(): void {
-    if (!this.formData.dictionary) return;
-
-    this.dictionaryService.getDictionaryByName(this.formData.dictionary).subscribe({
-      next: (data) => {
-        try {
-          const parsedContent = JSON.parse(data.content);
-          this.dictionary = parsedContent.words || [];
-          console.log('Dictionary loaded:', this.dictionary);
-        } catch (error) {
-          this.errorMessage = 'Error parsing dictionary content';
-          console.error('Error parsing dictionary content:', error);
-        }
-      },
-      error: (error) => {
-        this.errorMessage = 'Error loading dictionary';
-        console.error('Error loading dictionary:', error);
       },
     });
   }
@@ -212,10 +208,10 @@ export class CrosswordEditComponent implements OnInit {
     const selectedWord = target.value;
     wordObj.word = selectedWord;
 
-    // (Если нужна валидация пересечений, дефектов и т. д., 
+    // (Если нужна валидация пересечений, дефектов и т. д.,
     //  можно вставить метод validateNewWord, как в "create" компоненте.)
     //  Если не нужно — или делайте по желанию.
-    
+
     this.fillGrid(wordObj);
   }
 
@@ -230,7 +226,7 @@ export class CrosswordEditComponent implements OnInit {
   removeSelectedWord(wordObj: SelectedWordObj) {
     for (const cell of wordObj.cells) {
       const { row, col } = cell;
-      // Проверяем, нужно ли стирать букву: 
+      // Проверяем, нужно ли стирать букву:
       // если её не использует другое слово
       const usedByAnother = this.selectedWords.some((w) => {
         if (w === wordObj || w.word === '') return false;
@@ -272,20 +268,22 @@ export class CrosswordEditComponent implements OnInit {
         direction: this.getWordDirection(wordObj),
         cells: wordObj.cells,
       })),
-      // clues (если нужно), 
+      // clues (если нужно),
       // id: this.crosswordId (если нужно передавать id)
     };
 
     // Вызываем сервис для обновления
-    this.crosswordsService.updateCrossword(this.crosswordId, crosswordData).subscribe({
-      next: (response) => {
-        console.log('Crossword successfully updated:', response);
-        this.router.navigate(['/crosswords/library']);
-      },
-      error: (err) => {
-        console.error('Error updating crossword:', err);
-      },
-    });
+    this.crosswordsService
+      .updateCrossword(this.crosswordId, crosswordData)
+      .subscribe({
+        next: (response) => {
+          console.log('Crossword successfully updated:', response);
+          this.router.navigate(['/crosswords/library']);
+        },
+        error: (err) => {
+          console.error('Error updating crossword:', err);
+        },
+      });
   }
 
   // Пример: берём определение из dictionary

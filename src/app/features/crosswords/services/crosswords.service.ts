@@ -121,8 +121,12 @@ export class CrosswordsService {
     );
   }
 
-  getCrosswordById(crosswordId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/crosswords/play/${crosswordId}`);
+  getCrosswordById(crosswordId: string) {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/play/${crosswordId}`);
+  }
+  
+  getPublicCrosswordById(crosswordId: string) {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/edit/${crosswordId}`);
   }
 
   getUserCrosswordProgress(crosswordId: string) {
@@ -151,7 +155,7 @@ export class CrosswordsService {
     }
   ) {
     return this.http.post(
-      `${this.apiUrl}/crosswords/save/${crosswordId}`,
+      `${this.apiUrl}/crosswords/edit/public/${crosswordId}`,
       crosswordData
     );
   }
