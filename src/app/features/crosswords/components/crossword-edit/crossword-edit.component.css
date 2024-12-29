@@ -1,0 +1,81 @@
+.header-container {
+  background-color: white;
+  padding: 50px 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.grid {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.grid-container {
+  gap: 10px;
+  padding: 20px 20px;
+  display: flex;
+  flex-direction: row;
+  margin: 0 20px;
+  border-color: black;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.grid-row {
+  display: flex;
+}
+
+.grid-cell {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #000;
+  text-align: center;
+  line-height: 30px;
+  cursor: pointer;
+}
+
+.grid-cell.selected {
+  background-color: #ddd;
+}
+
+.selected-word-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.remove-button {
+  background-color: #f66;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  font-weight: bold;
+  line-height: 1;
+  text-align: center;
+}
+
+.remove-button:hover {
+  background-color: #d44;
+}
+
+.error-message {
+  color: red;
+}
+
+.button-container {
+  background-color: white;
+  padding: 50px 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.save-button {
+  padding: 20px 20px;
+  width: 150px;
+  height: 50px;
+}

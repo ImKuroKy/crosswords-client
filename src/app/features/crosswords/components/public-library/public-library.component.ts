@@ -90,7 +90,7 @@ export class PublicLibraryComponent implements OnInit {
   }
 
   editCrossword(crosswordId: string) {
-    this.router.navigate([`/crosswords/edit?${crosswordId}`]);
+    this.router.navigate([`/crosswords/crossword-edit/${crosswordId}`]);
   }
 
   paginateCrosswords(): void {

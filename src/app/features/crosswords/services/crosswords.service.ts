@@ -52,7 +52,7 @@ export class CrosswordsService {
   private apiUrl = environment.apiUrl;
   
   constructor(private http: HttpClient) {}
-
+  
   getUserId(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/crosswords/user`);
   }
@@ -107,9 +107,12 @@ export class CrosswordsService {
   saveCrosswordProgress(crosswordId: string, userProgress: UserProgress): Observable<any> {
     return this.http.post(`${this.apiUrl}/crosswords/save/${crosswordId}`, userProgress);
   }
-
+  
   getCrosswordById(crosswordId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/crosswords/play/${crosswordId}`);
   }
   
+  updateCrossword(crosswordId: string, crosswordData: { title: string; width: number; height: number; hints: number; fillMethod: string; dictionary: string; grid: string[][]; words: { word: string; definition: string; length: number; row: number; col: number; direction: string; cells: { row: number; col: number; }[]; }[]; }) {
+    return this.http.post(`${this.apiUrl}/crosswords/save/${crosswordId}`, crosswordData);
+  }
 }

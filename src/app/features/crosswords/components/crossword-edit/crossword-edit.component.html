@@ -1,0 +1,73 @@
+<div class="header-container">
+  <h2>Edit Crossword</h2>
+</div>
+
+<div class="grid">
+  <div class="grid-container">
+    <div>
+      <h3>Grid</h3>
+      <!-- Сетка с буквами -->
+      <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
+        <div
+          *ngFor="let cell of row; let colIndex = index"
+          class="grid-cell"
+          [class.selected]="isSelectedCell(rowIndex, colIndex)"
+          (mousedown)="startSelection(rowIndex, colIndex)"
+          (mouseover)="continueSelection(rowIndex, colIndex)"
+          (mouseup)="endSelection()"
+        >
+          {{ cell }}
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <h3>Words in Crossword</h3>
+      <!-- Перебираем "выделенные" (проставленные) участки -->
+      <div 
+        *ngFor="let wordObj of selectedWords" 
+        class="selected-word-row"
+      >
+        <!-- Кнопка "X" для удаления слова -->
+        <button 
+          type="button" 
+          class="remove-button" 
+          (click)="removeSelectedWord(wordObj)"
+        >
+          X
+        </button>
+        
+        <!-- Селект выбора слова из словаря, аналогично "create" -->
+        <select 
+          title="noTitle"
+          class="select"
+          [(ngModel)]="wordObj.word"
+          (change)="selectWord($event, wordObj)"
+        >
+          <option value="">Choose a word</option>
+          <option 
+            *ngFor="let w of filterWords(wordObj.cells, wordObj)"
+            [value]="w.word"
+          >
+            {{ w.word }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Ошибка -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="button-container">
+  <!-- Кнопка сохранения изменений -->
+  <button 
+    class="save-button" 
+    (click)="saveCrossword()"
+  >
+    Save Crossword
+  </button>
+</div>

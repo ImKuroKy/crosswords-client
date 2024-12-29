@@ -11,6 +11,7 @@ import { SystemComponent } from './features/about/components/system/system.compo
 import { CrosswordParamsComponent } from './features/crosswords/components/crossword-params/crossword-params.component';
 import { CrosswordCreateComponent } from './features/crosswords/components/crossword-create/crossword-create.component';
 import { CrosswordPlayComponent } from './features/crosswords/components/crossword-play/crossword-play.component';
+import { CrosswordEditComponent } from './features/crosswords/components/crossword-edit/crossword-edit.component';
 
 export const routes: Routes = [
   {
@@ -42,6 +43,11 @@ export const routes: Routes = [
     title: 'Создание кроссворда',
     path: 'crosswords/crossword-create',
     component: CrosswordCreateComponent,
+  },
+  {
+    title: 'Редактирвание кроссворда',
+    path: 'crosswords/crossword-edit/:crosswordId',
+    component: CrosswordEditComponent,
   },
   {
     title: 'Решение кроссворда',
