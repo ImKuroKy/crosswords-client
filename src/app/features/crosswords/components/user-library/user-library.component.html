@@ -5,7 +5,6 @@
       <div
         class="library__card"
         *ngFor="let crossword of paginatedCrosswords[currentPage]"
-        (click)="playCrossword(crossword.id)"
       >
         <button
           class="library__card-delete-button"
@@ -14,7 +13,12 @@
           X
         </button>
         <h3 class="library__card-title">{{ crossword.title }}</h3>
-        <img src="logo.svg" alt="Crossword Image" class="library__card-image" />
+        <img
+          src="logo.svg"
+          alt="Crossword Image"
+          (click)="playCrossword(crossword.id)"
+          class="library__card-image"
+        />
       </div>
     </div>
     <div class="library__pagination">

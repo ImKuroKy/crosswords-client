@@ -39,20 +39,27 @@ interface CrosswordData {
     cells: { row: number; col: number }[];
   }[];
   clues: {
-    across: { number: number; clue: string; cells: { row: number; col: number }[] }[];
-    down: { number: number; clue: string; cells: { row: number; col: number }[] }[];
+    across: {
+      number: number;
+      clue: string;
+      cells: { row: number; col: number }[];
+    }[];
+    down: {
+      number: number;
+      clue: string;
+      cells: { row: number; col: number }[];
+    }[];
   };
 }
-
 
 @Injectable({
   providedIn: 'root',
 })
 export class CrosswordsService {
   private apiUrl = environment.apiUrl;
-  
+
   constructor(private http: HttpClient) {}
-  
+
   getUserId(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/crosswords/user`);
   }
@@ -68,19 +75,19 @@ export class CrosswordsService {
           }))
         )
       );
-    }
-    
+  }
+
   getUserCrosswords(): Observable<Crossword[]> {
-    return this.http.get<any>(`${this.apiUrl}/crosswords/user/library`).pipe(
+    return this.http.get<any[]>(`${this.apiUrl}/crosswords/user/library`).pipe(
       map((data: any[]) =>
         data.map((crossword) => ({
-          id: crossword.crossword_id.toString(),
-          title: crossword.title,
+          id: crossword.id.toString(), // Преобразуем id в строку
+          title: crossword.title, // Оставляем title как есть
         }))
       )
     );
   }
-  
+
   addCrosswordToLibrary(crosswordId: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/crosswords/user/library`, {
       id: crosswordId,
@@ -98,21 +105,54 @@ export class CrosswordsService {
       body: { id: crosswordId },
     });
   }
-  
+
   // Метод для отправки данных кроссворда на сервер
   saveCrossword(crosswordData: CrosswordData): Observable<any> {
     return this.http.post(`${this.apiUrl}/crosswords/add`, crosswordData);
   }
-  
-  saveCrosswordProgress(crosswordId: string, userProgress: UserProgress): Observable<any> {
-    return this.http.post(`${this.apiUrl}/crosswords/save/${crosswordId}`, userProgress);
+
+  saveCrosswordProgress(
+    crosswordId: string,
+    userProgress: UserProgress
+  ): Observable<any> {
+    return this.http.post(
+      `${this.apiUrl}/crosswords/save/${crosswordId}`,
+      userProgress
+    );
   }
-  
+
   getCrosswordById(crosswordId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/crosswords/play/${crosswordId}`);
   }
-  
-  updateCrossword(crosswordId: string, crosswordData: { title: string; width: number; height: number; hints: number; fillMethod: string; dictionary: string; grid: string[][]; words: { word: string; definition: string; length: number; row: number; col: number; direction: string; cells: { row: number; col: number; }[]; }[]; }) {
-    return this.http.post(`${this.apiUrl}/crosswords/save/${crosswordId}`, crosswordData);
+
+  getUserCrosswordProgress(crosswordId: string) {
+    return this.http.get<any>(`${this.apiUrl}/crosswords/get/save/${crosswordId}`);
+  }
+
+  updateCrossword(
+    crosswordId: string,
+    crosswordData: {
+      title: string;
+      width: number;
+      height: number;
+      hints: number;
+      fillMethod: string;
+      dictionary: string;
+      grid: string[][];
+      words: {
+        word: string;
+        definition: string;
+        length: number;
+        row: number;
+        col: number;
+        direction: string;
+        cells: { row: number; col: number }[];
+      }[];
+    }
+  ) {
+    return this.http.post(
+      `${this.apiUrl}/crosswords/save/${crosswordId}`,
+      crosswordData
+    );
   }
 }

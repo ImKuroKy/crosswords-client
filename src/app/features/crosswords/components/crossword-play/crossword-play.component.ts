@@ -4,13 +4,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrosswordsService } from '../../services/crosswords.service';
 
-// ===== Интерфейсы (пример) ===== //
+// ===== Интерфейсы ===== //
 interface Clue {
   number: number;
   clue: string;
   cells: { row: number; col: number }[];
 }
-
 interface Word {
   word: string;
   definition: string;
@@ -20,7 +19,6 @@ interface Word {
   direction: 'across' | 'down';
   cells: { row: number; col: number; letter?: string }[];
 }
-
 interface CrosswordData {
   title: string;
   width: number;
@@ -32,10 +30,8 @@ interface CrosswordData {
     down: Clue[];
   };
 }
-
 interface UserProgress {
   grid: string[][];
-  // возможно, ещё какие-то поля
 }
 
 @Component({
@@ -47,6 +43,7 @@ interface UserProgress {
 })
 export class CrosswordPlayComponent implements OnInit {
   crosswordId!: string;
+
   crosswordData: CrosswordData = {
     title: '',
     width: 0,
@@ -55,14 +52,15 @@ export class CrosswordPlayComponent implements OnInit {
     words: [],
     clues: {
       across: [],
-      down: []
-    }
+      down: [],
+    },
   };
+
   userInputs: Record<string, string> = {};
   solvedWords: Set<string> = new Set();
   isGameCompleted = false;
- 
-  // Храним прогресс пользователя, который мы подтянем с сервера
+
+  // Прогресс пользователя
   userProgress: UserProgress | null = null;
 
   constructor(
@@ -79,30 +77,43 @@ export class CrosswordPlayComponent implements OnInit {
   /**
    * 1. Грузим crosswordData (структуру кроссворда).
    * 2. Грузим userProgress (сохранённый прогресс пользователя).
-   * 3. Если userProgress не пуст, инициализируем userInputs из него.
+   * 3. Если есть сохранённый прогресс, применяем его в userInputs.
    */
   fetchCrosswordData(): void {
-    // Пример: сервис может возвращать что-то вроде
-    // {
-    //   crossword: { content: {...} },
-    //   userProgress: { grid: [...] } или null
-    // }
     this.crosswordsService.getCrosswordById(this.crosswordId).subscribe({
       next: (response: any) => {
-        // 1) Структура кроссворда
-        this.crosswordData = response.crossword?.content || null;
+        // Предположим, сервер возвращает уже готовую структуру
+        // (Если вернёт что-то вроде { crossword: {...} }, нужно поправить строку ниже)
+        this.crosswordData = response;
+        console.log('Crossword data from server:', this.crosswordData);
 
-        // 2) Прогресс пользователя (может быть null или { grid: [...] })
-        this.userProgress = response.userProgress || null;
-
-        // Инициализация userInputs:
-        if (this.crosswordData) {
-          this.initializeUserInputs();
-          // Если есть сохранённый прогресс — подставляем его
-          if (this.userProgress && this.userProgress.grid) {
-            this.applyUserProgress(this.userProgress.grid);
-          }
+        // Если на сервере не приходят width/height, берём их из размера массива .grid:
+        if (this.crosswordData.grid.length > 0) {
+          this.crosswordData.height = this.crosswordData.grid.length;
+          this.crosswordData.width = this.crosswordData.grid[0].length;
         }
+
+        // Далее грузим прогресс
+        this.crosswordsService.getUserCrosswordProgress(this.crosswordId).subscribe({
+          next: (res: any) => {
+            // Теперь сервер возвращает, напр., { grid: [ [..], [..] ] }
+            console.log('User progress response:', res);
+            // Присваиваем напрямую
+            this.userProgress = res; // res = { grid: ... }
+
+            // Инициализация
+            this.initializeUserInputs();
+
+            // Если есть сохранённый grid, применим
+            if (this.userProgress && this.userProgress.grid) {
+              console.log('Applying user progress:', this.userProgress.grid);
+              this.applyUserProgress(this.userProgress.grid);
+            }
+          },
+          error: (err) => {
+            console.error('Error fetching user progress:', err);
+          },
+        });
       },
       error: (err) => {
         console.error('Error fetching crossword data:', err);
@@ -111,10 +122,11 @@ export class CrosswordPlayComponent implements OnInit {
   }
 
   /**
-   * Создаём в userInputs пустые строки для всех клеток, которые в words.
+   * Создаём пустые записи userInputs для всех клеток, которые входят в слова.
    */
   initializeUserInputs(): void {
     if (!this.crosswordData) return;
+    // Пробегаем по всем словам
     this.crosswordData.words.forEach((word) => {
       word.cells.forEach((cell) => {
         const key = `${cell.row}-${cell.col}`;
@@ -126,31 +138,30 @@ export class CrosswordPlayComponent implements OnInit {
   }
 
   /**
-   * Если у нас есть сохранённый grid (размером crosswordData.height x crosswordData.width),
-   * заполняем userInputs соответствующими буквами.
+   * Прогресс (progressGrid) - двумерный массив [r][c].
+   * Записываем буквы в userInputs, если есть такая ячейка.
    */
   applyUserProgress(progressGrid: string[][]): void {
-    // Просто пробежимся по этому массиву (row x col)
-    // и положим значения в userInputs[row-col], если клетка участвует в словах
     if (!this.crosswordData) return;
     for (let r = 0; r < this.crosswordData.height; r++) {
       for (let c = 0; c < this.crosswordData.width; c++) {
         const key = `${r}-${c}`;
         if (this.userInputs.hasOwnProperty(key)) {
           const letter = progressGrid[r][c] || '';
-          this.userInputs[key] = letter; // например "а" или ""
+          this.userInputs[key] = letter; 
         }
       }
     }
   }
 
+  // Событие при вводе буквы
   onInputChange(row: number, col: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const newValue = input.value.trim().toLowerCase();
     this.userInputs[`${row}-${col}`] = newValue;
 
     if (!this.crosswordData) return;
-    // Проверяем, в каком(их) слове(ах) участвует клетка
+    // Проверка, к какому слову принадлежит клетка
     this.crosswordData.words.forEach((word) => {
       const isPartOfWord = word.cells.some((c) => c.row === row && c.col === col);
       if (isPartOfWord) {
@@ -168,10 +179,8 @@ export class CrosswordPlayComponent implements OnInit {
   checkWordSolved(word: Word): boolean {
     if (!this.crosswordData) return false;
     for (const cell of word.cells) {
-      const userLetter = (this.userInputs[`${cell.row}-${cell.col}`] || '').trim().toLowerCase();
-      const originalLetter = (this.crosswordData.grid[cell.row][cell.col] || '')
-        .trim()
-        .toLowerCase();
+      const userLetter = (this.userInputs[`${cell.row}-${cell.col}`] || '').toLowerCase();
+      const originalLetter = (this.crosswordData.grid[cell.row][cell.col] || '').toLowerCase();
       if (!userLetter || userLetter !== originalLetter) {
         return false;
       }
@@ -183,9 +192,7 @@ export class CrosswordPlayComponent implements OnInit {
     if (!this.crosswordData) return false;
     const word = this.crosswordData.words.find((w) =>
       w.cells.every((cell) =>
-        clue.cells.some(
-          (clueCell) => clueCell.row === cell.row && clueCell.col === cell.col
-        )
+        clue.cells.some((clueCell) => clueCell.row === cell.row && clueCell.col === cell.col)
       )
     );
     if (!word) return false;
@@ -204,11 +211,7 @@ export class CrosswordPlayComponent implements OnInit {
     }
   }
 
-  // ====== Новая логика для вывода номеров в сетке ====== //
-  /**
-   * Возвращает массив номеров подсказок, которые начинаются в ячейке (row, col).
-   * Т. е. если эта клетка является "первой" для across-слова или down-слова.
-   */
+  // Нумерация подсказок
   getClueIdentifiers(row: number, col: number): string[] {
     if (!this.crosswordData) return [];
     const identifiers: string[] = [];
@@ -228,17 +231,13 @@ export class CrosswordPlayComponent implements OnInit {
     return identifiers;
   }
 
-  /**
-   * Сформировать объект { grid: string[][] } из текущего userInputs и отправить на сервер
-   */
+  // Сохранить прогресс
   saveProgress(): void {
     if (!this.crosswordData) return;
-    // Создаём пустую сетку того же размера
     const progressGrid: string[][] = Array.from({ length: this.crosswordData.height }, () =>
       Array.from({ length: this.crosswordData.width }, () => '')
     );
 
-    // Заполняем
     for (let r = 0; r < this.crosswordData.height; r++) {
       for (let c = 0; c < this.crosswordData.width; c++) {
         const key = `${r}-${c}`;
@@ -249,7 +248,6 @@ export class CrosswordPlayComponent implements OnInit {
     const userProgress: UserProgress = { grid: progressGrid };
     console.log('Saving user progress:', userProgress);
 
-    // вызываем сервис и отправляем userProgress
     this.crosswordsService.saveCrosswordProgress(this.crosswordId, userProgress).subscribe({
       next: () => {
         console.log('Progress saved successfully!');
@@ -258,5 +256,5 @@ export class CrosswordPlayComponent implements OnInit {
         console.error('Error saving progress:', err);
       },
     });
-  }  
+  }
 }

@@ -32,6 +32,7 @@ export class UserLibraryComponent implements OnInit {
   fetchCrosswords() {
     this.crosswordsService.getUserCrosswords().subscribe({
       next: (data: Crossword[]) => {
+        console.log('Fetched data from server:', data); // Лог для проверки формата
         this.crosswords = data;
         this.paginateCrosswords();
       },
@@ -40,6 +41,7 @@ export class UserLibraryComponent implements OnInit {
       },
     });
   }
+  
 
   deleteCrosswordFromLibrary(crosswordId: string) {
     this.crosswordsService.deleteCrosswordFromLibrary(crosswordId).subscribe({
