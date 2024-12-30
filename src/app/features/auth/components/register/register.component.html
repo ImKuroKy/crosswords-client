@@ -5,6 +5,8 @@
     #registerForm="ngForm"
   >
     <h2 class="register__title">Регистрация</h2>
+
+    <!-- Поле для никнейма -->
     <div class="register__field">
       <label for="nickname" class="register__label">Никнейм</label>
       <input
@@ -32,6 +34,7 @@
       </div>
     </div>
 
+    <!-- Поле для пароля -->
     <div class="register__field">
       <label for="password" class="register__label">Пароль</label>
       <input
@@ -59,6 +62,7 @@
       </div>
     </div>
 
+    <!-- Поле подтверждения пароля -->
     <div class="register__field">
       <label for="confirm-password" class="register__label">Подтвердите пароль</label>
       <input
@@ -71,27 +75,39 @@
         #confirmPassword="ngModel"
         class="register__input"
         [class.invalid]="
-          confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)
+          (confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)) ||
+          (user.password !== user.confirmPassword && confirmPassword.touched)
         "
       />
       <div
         *ngIf="
-          confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)
+          confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched) ||
+          (user.password !== user.confirmPassword && confirmPassword.touched)
         "
         class="register__field__error"
       >
+        <!-- Сообщение об обязательности ввода -->
         <p class="register__field__small-text" *ngIf="confirmPassword.errors?.['required']">
           Подтверждение пароля обязательно.
         </p>
-        <p class="register__field__small-text" *ngIf="confirmPassword.value !== password.value">
+        <!-- Сообщение о несовпадении паролей -->
+        <p
+          class="register__field__small-text"
+          *ngIf="user.password !== user.confirmPassword && confirmPassword.touched"
+        >
           Пароли не совпадают.
         </p>
       </div>
     </div>
+    
 
-    <button type="submit" class="register__button">Зарегистрироваться</button>
+    <button type="submit" class="register__button" [disabled]="registerForm.invalid">
+      Зарегистрироваться
+    </button>
     <div class="register__links">
       <a routerLink="/auth/login" class="register__link">Уже есть аккаунт? Войти</a>
     </div>
   </form>
 </div>
+
+<app-notification></app-notification>
