@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DictionaryService } from '../../services/dictionaries.service';
 import { Router } from '@angular/router';
 import { CrosswordGeneratorService } from '../../services/generation.service';
 import { CrosswordsService } from '../../services/crosswords.service';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
 
 @Component({
   selector: 'app-crossword-params',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationComponent],
   templateUrl: './crossword-params.component.html',
   styleUrl: './crossword-params.component.css',
 })
 export class CrosswordParamsComponent implements OnInit {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   formData = {
     title: '',
     width: 4,
@@ -108,6 +110,9 @@ export class CrosswordParamsComponent implements OnInit {
       };
 
       if (this.formData.fillMethod === 'manual') {
+        // Добавить запрос на поиск кроссворда с тем же именем на сервере
+        //
+        //
         localStorage.setItem('crosswordFormData', JSON.stringify(formData));
         this.router.navigate(['crosswords/crossword-create']);
       } else {
@@ -141,11 +146,13 @@ export class CrosswordParamsComponent implements OnInit {
                 console.log(crosswordData);
                 this.crosswordsService.saveCrossword(crosswordData).subscribe({
                   next: () => {
-                    this.router.navigate(['/crosswords/library']);
+                    this.notification.show('Кроссворд создан успешно!', 'success');
+                    setTimeout(() => {
+                      this.router.navigate(['/crosswords/library']);
+                    }, 3000);
                   },
                   error: (error) => {
-                    this.formErrors.dictionary =
-                      'Ошибка при сохранении кроссворда';
+                    this.notification.show(`Ошибка при создании кроссворда: ${error.error.message}`, 'error');
                     console.error('Error saving crossword:', error);
                   },
                 });

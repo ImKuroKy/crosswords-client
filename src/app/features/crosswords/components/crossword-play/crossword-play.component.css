@@ -1,3 +1,5 @@
+.title {margin-left: 280px;}
+
 .completion-message {
   color: green;
   font-weight: bold;
@@ -72,6 +74,8 @@
 
 /* Кнопка сохранения */
 .save-button {
+  margin-top: 180px;
+  margin-bottom: 20px;
   padding: 10px 20px;
   width: 150px;
   font-size: 16px;

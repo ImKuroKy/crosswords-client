@@ -33,6 +33,8 @@
   text-align: center;
   line-height: 30px;
   cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 .grid-cell.selected {

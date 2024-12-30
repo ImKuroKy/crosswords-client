@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { DictionaryService } from '../../services/dictionaries.service';
 import { CrosswordsService } from '../../services/crosswords.service';
+import { NotificationComponent } from '../../../../shared/notification/notification.component';
 
 interface FormData {
   title: string;
@@ -29,11 +30,12 @@ interface SelectedWordObj {
 @Component({
   selector: 'app-crossword-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationComponent],
   templateUrl: './crossword-edit.component.html',
   styleUrls: ['./crossword-edit.component.css'],
 })
 export class CrosswordEditComponent implements OnInit {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   crosswordId!: string;
 
   formData: FormData = {
@@ -278,10 +280,14 @@ export class CrosswordEditComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Crossword successfully updated:', response);
-          this.router.navigate(['/crosswords/library']);
+          this.notification.show('Кроссворд успешно обновлён!', 'success');
+          setTimeout(() => {
+            this.router.navigate(['/crosswords/library']);
+          }, 3000);
         },
         error: (err) => {
           console.error('Error updating crossword:', err);
+          this.notification.show('Не удалось обновить кроссворд', 'error');
         },
       });
   }

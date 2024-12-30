@@ -8,6 +8,7 @@ interface Crossword {
   id: string;
   title: string;
 }
+
 @Component({
   selector: 'app-user-library',
   standalone: true,
@@ -49,14 +50,14 @@ export class UserLibraryComponent implements OnInit {
         console.log('Crossword deleted from library:', response);
         this.fetchCrosswords();
         this.notification.show(
-          'Кроссворд удалён!',
+          'Кроссворд удалён из вашей библиотеки!',
           'success'
         );
       },
       error: (error) => {
         console.error('Error deleting crossword from library:', error);
         this.notification.show(
-          'Произошла ошибка при удалении кроссворда.',
+          'Произошла ошибка при удалении кроссворда из вашей библиотеки.',
           'error'
         );
       },

@@ -1,19 +1,21 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
 import { CommonModule } from '@angular/common';
 import { DictionaryService } from '../../services/dictionaries.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
 
 @Component({
   selector: 'app-dictionaries',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationComponent],
   templateUrl: './dictionaries.component.html',
   styleUrl: './dictionaries.component.css',
 })
 export class DictionariesComponent {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   file: File | null = null;
   dictionaryName: string = '';
   private apiUrl = `${environment.apiUrl}/dictionaries`;
@@ -56,12 +58,14 @@ export class DictionariesComponent {
       this.dictionaryService.uploadDictionary(formData).subscribe({
         next: (response) => {
           console.log('File uploaded successfully', response);
-          alert('Файл загружен успешно!');
-          this.router.navigate(['/dictionaries']);
+          this.notification.show('Словарь загружен успешно!', 'success');
+          setTimeout(() => {
+            this.router.navigate(['crosswords/dictionary-list']);
+          }, 3000);
         },
         error: (error) => {
           console.error('Error uploading file', error);
-          alert('Ошибка загрузки файла.');
+          this.notification.show('Ошибка загрузки словаря', 'error');
         },
       });
     }

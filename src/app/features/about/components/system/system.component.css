@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  height: 100vh;
+  height: 100%;
   background-color: #f5f5dc; /* Бежевый цвет фона */
   padding: 20px;
   box-sizing: border-box;
@@ -22,10 +22,9 @@
 }
 
 .system__title {
-  color: #ffffff; /* Белый цвет текста */
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 24px;
+  font-size: 36px; /* Увеличиваем размер шрифта */
+  text-align: center; /* Центрируем заголовок по горизонтали */
+  margin: 40px 0 60px 0; /* Добавляем отступ сверху, чтобы он не прилипал к верху экрана */
 }
 
 .system__text {
@@ -135,4 +134,21 @@ img {
 }
 a:hover {
   text-decoration: underline;
+}
+
+.content-section {
+  margin-bottom: 20px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+
+ul li ul {
+  margin-left: 20px;
 }

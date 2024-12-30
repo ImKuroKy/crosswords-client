@@ -1,8 +1,8 @@
 <div>
-  <h2>
+  <h2 class="title">
     {{ crosswordData.title }}
     <span *ngIf="isGameCompleted" class="completion-message">
-      Crossword completed!
+      Поздравляем, вы успешно разгадали кроссворд!
     </span>
   </h2>
 
@@ -70,7 +70,8 @@
 
   <div class="container">
     <button class="save-button" (click)="saveProgress()">
-      Save Crossword
+      Сохранить изменения
     </button>
   </div>
 </div>
+<app-notification></app-notification>

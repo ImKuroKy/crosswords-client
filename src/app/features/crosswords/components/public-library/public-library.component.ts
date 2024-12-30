@@ -61,12 +61,12 @@ export class PublicLibraryComponent implements OnInit {
     this.crosswordsService.addCrosswordToLibrary(crosswordId).subscribe({
       next: (response) => {
         console.log('Crossword added to library:', response);
-        this.notification.show('Кроссворд добавлен в библиотеку!', 'success');
+        this.notification.show('Кроссворд добавлен в вашу библиотеку!', 'success');
       },
       error: (error) => {
         console.error('Error adding crossword to library:', error);
         this.notification.show(
-          'Ошибка при добавлении кроссворда в библиотеку.',
+          'Ошибка при добавлении кроссворда в вашу библиотеку.',
           'error'
         );
       },
@@ -80,7 +80,7 @@ export class PublicLibraryComponent implements OnInit {
         next: (response) => {
           console.log('Crossword deleted from public library:', response);
           this.fetchCrosswords();
-          this.notification.show('Кроссворд удалён!', 'success');
+          this.notification.show('Кроссворд удалён из общей библиотеки!', 'success');
         },
         error: (error) => {
           console.error('Error adding crossword to library:', error);

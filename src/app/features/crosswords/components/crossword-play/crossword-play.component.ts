@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrosswordsService } from '../../services/crosswords.service';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
 
 // ===== Интерфейсы ===== //
 interface Clue {
@@ -37,11 +38,12 @@ interface UserProgress {
 @Component({
   selector: 'app-crossword-play',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationComponent],
   templateUrl: './crossword-play.component.html',
   styleUrls: ['./crossword-play.component.css'],
 })
 export class CrosswordPlayComponent implements OnInit {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   crosswordId!: string;
 
   crosswordData: CrosswordData = {
@@ -251,9 +253,11 @@ export class CrosswordPlayComponent implements OnInit {
     this.crosswordsService.saveCrosswordProgress(this.crosswordId, userProgress).subscribe({
       next: () => {
         console.log('Progress saved successfully!');
+        this.notification.show('Сохранено успешно!', 'success');
       },
       error: (err: any) => {
         console.error('Error saving progress:', err);
+        this.notification.show('Не удалось сохранить', 'error');
       },
     });
   }

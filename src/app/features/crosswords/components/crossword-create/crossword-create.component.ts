@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DictionaryService } from '../../services/dictionaries.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CrosswordsService } from '../../services/crosswords.service';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
 
 interface FormData {
   title: string;
@@ -28,11 +29,12 @@ interface SelectedWordObj {
 @Component({
   selector: 'app-crossword-create',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NotificationComponent],
   templateUrl: './crossword-create.component.html',
   styleUrls: ['./crossword-create.component.css'],
 })
 export class CrosswordCreateComponent implements OnInit {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   formData: FormData;
   grid: string[][] = [];
   dictionary: DictionaryWord[] = [];
@@ -361,10 +363,14 @@ export class CrosswordCreateComponent implements OnInit {
 
     this.crosswordsService.saveCrossword(crosswordData).subscribe({
       next: (response) => {
-        console.log('Кроссворд успешно сохранен:', response);
-        this.router.navigate(['/crosswords/library']);
+        this.notification.show('Кроссворд создан успешно!', 'success');
+        setTimeout(() => {
+          console.log('Кроссворд успешно сохранен:', response);
+          this.router.navigate(['/crosswords/library']);
+        }, 3000);
       },
       error: (error) => {
+        this.notification.show('Ошибка при создании кроссворда!', 'error');
         console.error('Ошибка при сохранении кроссворда:', error);
       },
       complete: () => {
