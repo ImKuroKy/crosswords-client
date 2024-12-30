@@ -1,19 +1,21 @@
 // src/app/pages/login-page/login-page.component.ts
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../../../services/api.service';
 import { CheckTokenService } from '../../../../services/check-token.service';
+import { NotificationComponent } from "../../../../shared/notification/notification.component";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],
+  imports: [RouterModule, CommonModule, FormsModule, NotificationComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  @ViewChild(NotificationComponent) notification!: NotificationComponent;
   user = {
     nickname: '',
     password: '',
@@ -36,6 +38,7 @@ export class LoginComponent {
 
       },
       error: (error) => {
+        this.notification.show(`Произошла ошибка при попытке авторизации: ${error.error.message}`, 'error');
         console.error('There was an error logging in: ', error);
       },
     });
