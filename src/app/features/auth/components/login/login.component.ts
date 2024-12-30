@@ -1,11 +1,10 @@
-// src/app/pages/login-page/login-page.component.ts
 import { CommonModule } from '@angular/common';
 import { Component, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { ApiService } from '../../../../services/api.service';
 import { CheckTokenService } from '../../../../services/check-token.service';
-import { NotificationComponent } from "../../../../shared/notification/notification.component";
+import { NotificationComponent } from '../../../../shared/notification/notification.component';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +15,7 @@ import { NotificationComponent } from "../../../../shared/notification/notificat
 })
 export class LoginComponent {
   @ViewChild(NotificationComponent) notification!: NotificationComponent;
+
   user = {
     nickname: '',
     password: '',
@@ -28,17 +28,23 @@ export class LoginComponent {
   ) {}
 
   onSubmit(form: NgForm) {
-    if (form.invalid) return;
+    if (form.invalid) {
+      this.notification.show('Пожалуйста, заполните все поля корректно.', 'error');
+      return;
+    }
 
     this.apiService.login(this.user).subscribe({
       next: (response) => {
         this.router.navigate(['/crosswords/library']);
         this.checkTokenService.login();
         localStorage.setItem('token', response.token);
-
+        this.notification.show('Вы успешно вошли!', 'success');
       },
       error: (error) => {
-        this.notification.show(`Произошла ошибка при попытке авторизации: ${error.error.message}`, 'error');
+        this.notification.show(
+          `Произошла ошибка при попытке авторизации: ${error.error}`,
+          'error'
+        );
         console.error('There was an error logging in: ', error);
       },
     });
