@@ -130,8 +130,10 @@
         [id]="section.id"
         class="content-section"
       >
+        <h1>{{section.header}}</h1>
         <h2>{{ section.title }}</h2>
         <p>{{ section.content }}</p>
+        <img class="image_content" alt="" *ngIf="section.image" [src]="section.image" [alt]="section.title" />
       </div>
     </section>
   </div>

@@ -138,6 +138,16 @@ a:hover {
 
 .content-section {
   margin-bottom: 20px;
+  padding: 10px;
+  overflow: hidden; /* Ограничивает выход содержимого за рамки */
+}
+
+.content-section img {
+  display: block; /* Убирает нижние отступы */
+  max-width: 100%; /* Изображение не превышает ширину контейнера */
+  max-height: 600px; /* Устанавливает максимальную высоту */
+  object-fit: contain; /* Сохраняет пропорции, вписывая изображение в контейнер */
+  margin: auto; /* Центрирует изображение внутри контейнера */
 }
 
 ul {

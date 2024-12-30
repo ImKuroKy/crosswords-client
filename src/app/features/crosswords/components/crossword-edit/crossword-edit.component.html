@@ -1,11 +1,11 @@
 <div class="header-container">
-  <h2>Edit Crossword</h2>
+  <h2>Изменить кроссворд</h2>
 </div>
 
 <div class="grid">
   <div class="grid-container">
     <div>
-      <h3>Grid</h3>
+      <h3>Сетка</h3>
       <!-- Сетка с буквами -->
       <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
         <div
@@ -22,7 +22,7 @@
     </div>
 
     <div>
-      <h3>Words in Crossword</h3>
+      <h3>Слова в кроссворде</h3>
       <!-- Перебираем "выделенные" (проставленные) участки -->
       <div 
         *ngFor="let wordObj of selectedWords" 
@@ -44,7 +44,7 @@
           [(ngModel)]="wordObj.word"
           (change)="selectWord($event, wordObj)"
         >
-          <option value="">Choose a word</option>
+          <option value="">Выберите слово</option>
           <option 
             *ngFor="let w of filterWords(wordObj.cells, wordObj)"
             [value]="w.word"
@@ -68,7 +68,7 @@
     class="save-button" 
     (click)="saveCrossword()"
   >
-    Save Crossword
+    Сохранить кроссворд
   </button>
 </div>
 <app-notification></app-notification>

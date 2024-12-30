@@ -1,11 +1,11 @@
 <div class="header-container">
-  <h2>Create Crossword</h2>
+  <h2>Ручное создание кроссворда</h2>
 </div>
 
 <div class="grid">
   <div class="grid-container">
     <div>
-      <h3>Grid</h3>
+      <h3>Сетка</h3>
       <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
         <div
           *ngFor="let cell of row; let colIndex = index"
@@ -21,7 +21,7 @@
     </div>
 
     <div>
-      <h3>Selected Words</h3>
+      <h3>Слова в кроссворде</h3>
 
       <!-- Перебираем "непроставленные" слова (т. е. у которых word === '') -->
       <div *ngFor="let wordObj of selectedWords" class="selected-word-row">
@@ -58,7 +58,7 @@
 </div>
 
 <div class="button-container">
-  <button class="save-button" (click)="saveCrossword()">Save Crossword</button>
+  <button class="save-button" (click)="saveCrossword()">Создать кроссворд</button>
 </div>
 
 <app-notification></app-notification>

@@ -6,14 +6,15 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './system.component.html',
-  styleUrl: './system.component.css'
+  styleUrl: './system.component.css',
 })
 export class SystemComponent {
   // Секции контента
   sections = [
     {
       id: 'introduction',
-      title: 'Введение',
+      header: 'Введение',
+      title: '',
       content: `Система создана для  создания и решения классических кроссвордов. 
                 Это веб-приложение, рассчитанное на две основные
                 группы пользователей: администраторов и игроков.
@@ -36,7 +37,8 @@ export class SystemComponent {
     },
     {
       id: 'Working_with_the_system',
-      title: 'Работа с системой',
+      header: 'Работа с системой',
+      title: '',
       content: ``,
     },
     {
@@ -54,14 +56,16 @@ export class SystemComponent {
                 перейти по адресу http://127.0.0.1/admin/, заполнить поля для
                 авторизации и нажать кнопку «Вход». После успешной авторизации
                 откроется главная страница администратора.`,
+      image: 'log_in_to_the_system.jpg',
     },
     {
       id: 'View_all_the_crosswords',
       title: 'Просмотр всех кроссвордов',
-      content: ` На главной странице показаны все кроссворды из БД, разбитые
+      content: `На главной странице показаны все кроссворды из БД, разбитые
                 на страницы по 12 кроссвордов на каждой. Каждый
                 кроссворд можно удалить или изменить. Также присутствует
                 кнопка "Создать кроссворд" для создания нового кроссворда.`,
+      image: 'view_all_the_crosswords.jpg',
     },
     {
       id: 'Creating_a_new_crossword',
@@ -73,6 +77,7 @@ export class SystemComponent {
                 или вручную). После этого нужно нажать на кнопку "Создать",
                 при этом система проверяет корректность введенных параметров
                 и если все корректно, то создает кроссворд.`,
+      image: 'creating_a_new_crossword.jpg',
     },
     {
       id: 'Automatic_crossword_completion',
@@ -81,6 +86,7 @@ export class SystemComponent {
                 то система сама заполнит все слова в кроссворд на свое усмотрение.
                 После этого система покажет всплывающее сообщение об успешном создании
                 кроссворда и отобразить главную страницу администратора.`,
+      image: 'automatic_crossword_completion.jpg',
     },
     {
       id: 'Manually_completing_a_crossword',
@@ -96,6 +102,7 @@ export class SystemComponent {
                 тогда система проверит корректность введенных слов. После этого
                 система покажет всплывающее сообщение об успешном создании
                 кроссворда и отобразить главную страницу администратора.`,
+      image: 'manually_completing_a_crossword.jpg',
     },
     {
       id: 'Changing_the_crossword',
@@ -103,6 +110,7 @@ export class SystemComponent {
       content: `Если администратор выбрал изменить уже существующий кроссворд, то
                 система отобразить страницу ручного заполнения кроссворда. Администратору
                 также нужно будет проделать все шаги как в пункте "Ручное заполнение кроссворда".`,
+      image: 'changing_the_crossword.jpg',
     },
     {
       id: 'View_all_dictionaries_of_concepts',
@@ -111,6 +119,7 @@ export class SystemComponent {
                 разбитые на страницы.Администратор может удалить словарь, нажав соотвествующую
                 кнопку рядом с выбранным словарем. Он также может добавить новый словарь понятий,
                 нажав на кнопку "Добавить словарь".`,
+      image: 'view_all_dictionaries_of_concepts.jpg',
     },
     {
       id: 'Adding_a_new_vocabulary_of_concepts',
@@ -120,6 +129,7 @@ export class SystemComponent {
                 администратору выбрать файл на ПК. Далее администратору нужно нажать
                 на кнопку "Подтвердить". Система проверит корректность файла, и в случае
                 успеха отобразить страницу со всеми словарями понятий.`,
+      image: 'adding_a_new_vocabulary_of_concepts.jpg',
     },
     {
       id: 'Working_with_the_system_in_player_mode',
@@ -135,6 +145,7 @@ export class SystemComponent {
       content: `Чтобы получить доступ к интерфейсу игрока необходимо пройти
                 регистрацию или авторизацию, заполнить поля для и нажать кнопку «Вход». 
                 После успешной авторизации отроется главная страница игрока.`,
+      image: 'login_for_the_player.jpg',
     },
     {
       id: 'View_all_the_crosswords_for_player',
@@ -144,6 +155,7 @@ export class SystemComponent {
                 кроссворд можно добавить в библиотеку игрока, для чего
                 нужно нажать на соотвествующую кнопку рядом с выбранным
                 кроссвордом.`,
+      image: 'view_all_the_crosswords_for_player.jpg',
     },
     {
       id: 'Viewing_crosswords_in_the_player_library',
@@ -154,6 +166,7 @@ export class SystemComponent {
                 нужно нажать на соотвествующую кнопку рядом с выбранным
                 кроссвордом. Также рядом с каждым кроссвордом написан процент
                 решения этого кроссворда игроком.`,
+      image: 'viewing_crosswords_in_the_player_library.jpg',
     },
     {
       id: 'Solving_the_crossword',
@@ -165,14 +178,15 @@ export class SystemComponent {
                 на сетку. Если слово было введено верно, то система зачеркнет 
                 определение этого слова на левой части страницы. Таким образом
                 игроку нужно полностью решить кроссворд.`,
+      image: 'solving_the_crossword.jpg',
     },
   ];
 
- // Метод для плавной прокрутки
- scrollToSection(sectionId: string): void {
-  const element = document.getElementById(sectionId);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Метод для плавной прокрутки
+  scrollToSection(sectionId: string): void {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
-}
 }
