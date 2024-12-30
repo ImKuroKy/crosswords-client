@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CrosswordsService } from '../../services/crosswords.service';
-import { NotificationComponent } from "../../../../shared/notification/notification.component";
+import { NotificationComponent } from '../../../../shared/notification/notification.component';
 
 // ===== Интерфейсы ===== //
 interface Clue {
@@ -82,43 +82,51 @@ export class CrosswordPlayComponent implements OnInit {
    * 3. Если есть сохранённый прогресс, применяем его в userInputs.
    */
   fetchCrosswordData(): void {
+    // Получаем данные кроссворда с сервера
     this.crosswordsService.getCrosswordById(this.crosswordId).subscribe({
       next: (response: any) => {
-        // Предположим, сервер возвращает уже готовую структуру
-        // (Если вернёт что-то вроде { crossword: {...} }, нужно поправить строку ниже)
-        this.crosswordData = response;
-        console.log('Crossword data from server:', this.crosswordData);
+        console.log('Crossword data from server:', response);
 
-        // Если на сервере не приходят width/height, берём их из размера массива .grid:
-        if (this.crosswordData.grid.length > 0) {
-          this.crosswordData.height = this.crosswordData.grid.length;
-          this.crosswordData.width = this.crosswordData.grid[0].length;
-        }
+        // Проверяем и инициализируем данные кроссворда
+        this.crosswordData = response || {};
+        this.crosswordData.grid = this.crosswordData.grid || [];
+        this.crosswordData.height =
+          this.crosswordData.height || this.crosswordData.grid.length || 0;
+        this.crosswordData.width =
+          this.crosswordData.width || this.crosswordData.grid[0]?.length || 0;
 
-        // Далее грузим прогресс
-        this.crosswordsService.getUserCrosswordProgress(this.crosswordId).subscribe({
-          next: (res: any) => {
-            // Теперь сервер возвращает, напр., { grid: [ [..], [..] ] }
-            console.log('User progress response:', res);
-            // Присваиваем напрямую
-            this.userProgress = res; // res = { grid: ... }
+        // Загружаем прогресс пользователя
+        this.crosswordsService
+          .getUserCrosswordProgress(this.crosswordId)
+          .subscribe({
+            next: (res: any) => {
+              console.log('User progress response:', res);
 
-            // Инициализация
-            this.initializeUserInputs();
+              // Если прогресс отсутствует, оставляем сетку кроссворда без изменений
+              this.userProgress = res || { grid: null };
 
-            // Если есть сохранённый grid, применим
-            if (this.userProgress && this.userProgress.grid) {
-              console.log('Applying user progress:', this.userProgress.grid);
-              this.applyUserProgress(this.userProgress.grid);
-            }
-          },
-          error: (err) => {
-            console.error('Error fetching user progress:', err);
-          },
-        });
+              // Инициализация пользовательского ввода
+              this.initializeUserInputs();
+
+              // Если есть пользовательский прогресс, применяем его к текущему кроссворду
+              if (this.userProgress?.grid) {
+                console.log('Applying user progress:', this.userProgress.grid);
+                this.applyUserProgress(this.userProgress.grid);
+              } else {
+                console.log('No user progress available, using default grid.');
+              }
+            },
+            error: (err) => {
+              console.error('Error fetching user progress:', err);
+              // Если прогресс не загрузился, инициализируем пустой ввод
+              this.userProgress = { grid: [] };
+              this.initializeUserInputs();
+            },
+          });
       },
       error: (err) => {
         console.error('Error fetching crossword data:', err);
+        this.notification.show(`Произошла ошибка при получении кроссворда. Попробуйте ещё раз. Вот причина возникновения ошибки: ${err}`, 'error');
       },
     });
   }
@@ -150,7 +158,7 @@ export class CrosswordPlayComponent implements OnInit {
         const key = `${r}-${c}`;
         if (this.userInputs.hasOwnProperty(key)) {
           const letter = progressGrid[r][c] || '';
-          this.userInputs[key] = letter; 
+          this.userInputs[key] = letter;
         }
       }
     }
@@ -165,7 +173,9 @@ export class CrosswordPlayComponent implements OnInit {
     if (!this.crosswordData) return;
     // Проверка, к какому слову принадлежит клетка
     this.crosswordData.words.forEach((word) => {
-      const isPartOfWord = word.cells.some((c) => c.row === row && c.col === col);
+      const isPartOfWord = word.cells.some(
+        (c) => c.row === row && c.col === col
+      );
       if (isPartOfWord) {
         const solved = this.checkWordSolved(word);
         if (solved) {
@@ -181,8 +191,12 @@ export class CrosswordPlayComponent implements OnInit {
   checkWordSolved(word: Word): boolean {
     if (!this.crosswordData) return false;
     for (const cell of word.cells) {
-      const userLetter = (this.userInputs[`${cell.row}-${cell.col}`] || '').toLowerCase();
-      const originalLetter = (this.crosswordData.grid[cell.row][cell.col] || '').toLowerCase();
+      const userLetter = (
+        this.userInputs[`${cell.row}-${cell.col}`] || ''
+      ).toLowerCase();
+      const originalLetter = (
+        this.crosswordData.grid[cell.row][cell.col] || ''
+      ).toLowerCase();
       if (!userLetter || userLetter !== originalLetter) {
         return false;
       }
@@ -194,7 +208,9 @@ export class CrosswordPlayComponent implements OnInit {
     if (!this.crosswordData) return false;
     const word = this.crosswordData.words.find((w) =>
       w.cells.every((cell) =>
-        clue.cells.some((clueCell) => clueCell.row === cell.row && clueCell.col === cell.col)
+        clue.cells.some(
+          (clueCell) => clueCell.row === cell.row && clueCell.col === cell.col
+        )
       )
     );
     if (!word) return false;
@@ -203,7 +219,10 @@ export class CrosswordPlayComponent implements OnInit {
 
   checkGameCompletion(): void {
     if (!this.crosswordData) return;
-    const allClues = [...this.crosswordData.clues.across, ...this.crosswordData.clues.down];
+    const allClues = [
+      ...this.crosswordData.clues.across,
+      ...this.crosswordData.clues.down,
+    ];
     this.isGameCompleted = allClues.every((clue) => this.isWordSolved(clue));
     if (this.isGameCompleted) {
       console.log('Game completed!');
@@ -217,7 +236,7 @@ export class CrosswordPlayComponent implements OnInit {
   getClueIdentifiers(row: number, col: number): string[] {
     if (!this.crosswordData) return [];
     const identifiers: string[] = [];
-  
+
     this.crosswordData.clues.across.forEach((clue) => {
       const firstCell = clue.cells[0];
       if (firstCell.row === row && firstCell.col === col) {
@@ -236,8 +255,9 @@ export class CrosswordPlayComponent implements OnInit {
   // Сохранить прогресс
   saveProgress(): void {
     if (!this.crosswordData) return;
-    const progressGrid: string[][] = Array.from({ length: this.crosswordData.height }, () =>
-      Array.from({ length: this.crosswordData.width }, () => '')
+    const progressGrid: string[][] = Array.from(
+      { length: this.crosswordData.height },
+      () => Array.from({ length: this.crosswordData.width }, () => '')
     );
 
     for (let r = 0; r < this.crosswordData.height; r++) {
@@ -250,15 +270,17 @@ export class CrosswordPlayComponent implements OnInit {
     const userProgress: UserProgress = { grid: progressGrid };
     console.log('Saving user progress:', userProgress);
 
-    this.crosswordsService.saveCrosswordProgress(this.crosswordId, userProgress).subscribe({
-      next: () => {
-        console.log('Progress saved successfully!');
-        this.notification.show('Сохранено успешно!', 'success');
-      },
-      error: (err: any) => {
-        console.error('Error saving progress:', err);
-        this.notification.show('Не удалось сохранить', 'error');
-      },
-    });
+    this.crosswordsService
+      .saveCrosswordProgress(this.crosswordId, userProgress)
+      .subscribe({
+        next: () => {
+          console.log('Progress saved successfully!');
+          this.notification.show('Сохранено успешно!', 'success');
+        },
+        error: (err: any) => {
+          console.error('Error saving progress:', err);
+          this.notification.show('Не удалось сохранить', 'error');
+        },
+      });
   }
 }
