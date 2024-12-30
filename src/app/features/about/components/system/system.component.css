@@ -106,6 +106,7 @@ h3,
 p {
   font-size: 24px;
   margin: 40px 30px 30px 30px; /* Отступ от левой границы */
+  text-decoration: none;
 }
 
 /* Устанавливаем общий размер шрифта для body */
@@ -161,4 +162,9 @@ ul li {
 
 ul li ul {
   margin-left: 20px;
+}
+
+ul li a {
+  text-decoration: none;
+  color: #000;
 }
