@@ -1,97 +1,98 @@
-<div>
-  <h2 class="title">
-    {{ crosswordData.title + ". " }}
-    <!-- Выводим текущее количество подсказок -->
-    <span class="hints-info">Подсказок: {{ crosswordData.hints }}</span>
-    <span *ngIf="isGameCompleted" class="completion-message">
-      Поздравляем, вы успешно разгадали кроссворд!
-    </span>
-  </h2>
+<div class="content">
+  <div>
+    <h2 class="title">
+      {{ crosswordData.title + ". " }}
+      <!-- Выводим текущее количество подсказок -->
+      <span class="hints-info">Подсказок: {{ crosswordData.hints }}</span>
+      <span *ngIf="isGameCompleted" class="completion-message">
+        Поздравляем, вы успешно разгадали кроссворд!
+      </span>
+    </h2>
 
-  <div class="grid">
-    <div class="grid-container">
-      <!-- Перебираем строки grid -->
-      <div
-        *ngFor="let row of crosswordData?.grid; let rowIndex = index"
-        class="grid-row"
-      >
-        <!-- Перебираем клетки строки -->
+    <div class="grid">
+      <div class="grid-container">
+        <!-- Перебираем строки grid -->
         <div
-          *ngFor="let cell of row; let colIndex = index"
-          class="grid-cell"
+          *ngFor="let row of crosswordData?.grid; let rowIndex = index"
+          class="grid-row"
         >
-          <!-- Вложим в клетку "относительный контейнер", чтобы позиционировать номер -->
-          <div class="cell-content">
-            <!-- Показать номера вопроса, если есть -->
-            <div class="clue-number" *ngIf="getClueIdentifiers(rowIndex, colIndex).length">
-              {{ getClueIdentifiers(rowIndex, colIndex).join('/') }}
+          <!-- Перебираем клетки строки -->
+          <div *ngFor="let cell of row; let colIndex = index" class="grid-cell">
+            <!-- Вложим в клетку "относительный контейнер", чтобы позиционировать номер -->
+            <div class="cell-content">
+              <!-- Показать номера вопроса, если есть -->
+              <div
+                class="clue-number"
+                *ngIf="getClueIdentifiers(rowIndex, colIndex).length"
+              >
+                {{ getClueIdentifiers(rowIndex, colIndex).join("/") }}
+              </div>
+
+              <!-- Если ячейка пустая => "чёрная" (блокированная) клетка -->
+              <input
+                title="any"
+                *ngIf="cell === ''"
+                class="cell-input blocked-cell"
+                type="text"
+                disabled
+              />
+
+              <!-- Иначе показываем инпут -->
+              <input
+                title="any"
+                *ngIf="cell !== ''"
+                type="text"
+                maxlength="1"
+                [(ngModel)]="userInputs[rowIndex + '-' + colIndex]"
+                (input)="onInputChange(rowIndex, colIndex, $event)"
+                class="cell-input"
+              />
             </div>
-            
-
-            <!-- Если ячейка пустая => "чёрная" (блокированная) клетка -->
-            <input
-              title="any"
-              *ngIf="cell === ''"
-              class="cell-input blocked-cell"
-              type="text"
-              disabled
-            />
-
-            <!-- Иначе показываем инпут -->
-            <input
-              title="any"
-              *ngIf="cell !== ''"
-              type="text"
-              maxlength="1"
-              [(ngModel)]="userInputs[rowIndex + '-' + colIndex]"
-              (input)="onInputChange(rowIndex, colIndex, $event)"
-              class="cell-input"
-            />
           </div>
+        </div>
+      </div>
+
+      <!-- Подсказки (список слов) -->
+      <div>
+        <h3>По-горизонтали:</h3>
+        <div *ngFor="let clue of crosswordData.clues?.across">
+          <!-- Если слово решено, можно зачеркнуть... -->
+          <strong [ngClass]="{ solved: isWordSolved(clue) }">
+            {{ clue.number + "A" }}:
+          </strong>
+          {{ clue.clue }}
+          <!-- Кнопка "?" для использования подсказки, если есть -->
+          <button
+            class="hint-button"
+            (click)="useHint(clue)"
+            [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
+          >
+            ?
+          </button>
+        </div>
+
+        <h3>По-вертикали:</h3>
+        <div *ngFor="let clue of crosswordData.clues?.down">
+          <strong [ngClass]="{ solved: isWordSolved(clue) }">
+            {{ clue.number + "D" }}:
+          </strong>
+          {{ clue.clue }}
+          <button
+            class="hint-button"
+            (click)="useHint(clue)"
+            [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
+          >
+            ?
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- Подсказки (список слов) -->
-    <div>
-      <h3>По-горизонтали:</h3>
-      <div *ngFor="let clue of crosswordData.clues?.across">
-        <!-- Если слово решено, можно зачеркнуть... -->
-        <strong [ngClass]="{'solved': isWordSolved(clue)}">
-          {{ clue.number + "A" }}:
-        </strong>
-        {{ clue.clue }}
-        <!-- Кнопка "?" для использования подсказки, если есть -->
-        <button 
-          class="hint-button"
-          (click)="useHint(clue)"
-          [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
-        >
-          ?
-        </button>
-      </div>
-
-      <h3>По-вертикали:</h3>
-      <div *ngFor="let clue of crosswordData.clues?.down">
-        <strong [ngClass]="{'solved': isWordSolved(clue)}">
-          {{ clue.number + "D" }}:
-        </strong>
-        {{ clue.clue }}
-        <button
-          class="hint-button"
-          (click)="useHint(clue)"
-          [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
-        >
-          ?
-        </button>
-      </div>
+    <div class="container">
+      <button class="save-button" (click)="saveProgress()">
+        Сохранить изменения
+      </button>
     </div>
-  </div>
-
-  <div class="container">
-    <button class="save-button" (click)="saveProgress()">
-      Сохранить изменения
-    </button>
   </div>
 </div>
 <app-notification></app-notification>

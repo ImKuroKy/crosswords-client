@@ -1,3 +1,8 @@
+.content {
+  height: 100%;
+  min-height: 95vh;
+}
+
 .header-container {
   background-color: white;
   padding: 50px 50px;
@@ -6,20 +11,15 @@
 }
 
 .grid {
-  background-color: white;
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
 
 .grid-container {
-  gap: 10px;
-  padding: 20px 20px;
-  display: flex;
-  flex-direction: row;
-  margin: 0 20px;
-  border-color: black;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 30px;
+  padding: 5px;
+  box-shadow: 0 4px 8px #ccc;
 }
 
 .grid-row {
@@ -27,14 +27,23 @@
 }
 
 .grid-cell {
-  width: 30px;
-  height: 30px;
+  width: 60px;
+  height: 60px;
+  /* Можно сразу сделать position: relative
+     но мы тут вложим .cell-content с relative */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: 1px solid #000;
+  font-size: 28px;
   text-align: center;
   line-height: 30px;
-  cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
+}
+
+.grid-cell:hover {
+  background-color: lightgrey;
 }
 
 .grid-cell.selected {
@@ -48,7 +57,7 @@
 }
 
 .remove-button {
-  background-color: #f66;
+  background-color: darksalmon;
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -62,7 +71,7 @@
 }
 
 .remove-button:hover {
-  background-color: #d44;
+  background-color: lightcoral;
 }
 
 .error-message {
@@ -77,6 +86,12 @@
 }
 
 .save-button {
+  border-radius: 0.375rem;
   width: 150px;
   height: 50px;
+}
+
+.save-button:hover {
+  background-color: antiquewhite;
+  border-radius: 0.375rem;
 }
