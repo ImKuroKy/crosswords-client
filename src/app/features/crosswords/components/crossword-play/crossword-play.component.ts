@@ -26,7 +26,7 @@ interface CrosswordData {
   height: number;
   grid: string[][];
   words: Word[];
-  hints: number,
+  hints: number;
   clues: {
     across: Clue[];
     down: Clue[];
@@ -328,6 +328,34 @@ export class CrosswordPlayComponent implements OnInit {
         error: (err: any) => {
           console.error('Error saving progress:', err);
           this.notification.show('Не удалось сохранить', 'error');
+        },
+      });
+  }
+
+  onBlurSave(): void {
+    if (!this.crosswordData) return;
+    const progressGrid: string[][] = Array.from(
+      { length: this.crosswordData.height },
+      () => Array.from({ length: this.crosswordData.width }, () => '')
+    );
+
+    for (let r = 0; r < this.crosswordData.height; r++) {
+      for (let c = 0; c < this.crosswordData.width; c++) {
+        const key = `${r}-${c}`;
+        progressGrid[r][c] = this.userInputs[key] || '';
+      }
+    }
+
+    const userProgress: UserProgress = { grid: progressGrid };
+
+    this.crosswordsService
+      .saveCrosswordProgress(this.crosswordId, userProgress)
+      .subscribe({
+        next: () => {
+          console.log('Progress saved successfully!');
+        },
+        error: (err: any) => {
+          console.error('Error saving progress:', err);
         },
       });
   }

@@ -45,6 +45,7 @@
                 maxlength="1"
                 [(ngModel)]="userInputs[rowIndex + '-' + colIndex]"
                 (input)="onInputChange(rowIndex, colIndex, $event)"
+                (blur)="onBlurSave()"
                 class="cell-input"
               />
             </div>
