@@ -29,7 +29,13 @@
             
 
             <!-- Если ячейка пустая => "чёрная" (блокированная) клетка -->
-            <span *ngIf="cell === ''" class="blocked-cell"></span>
+            <input
+              title="any"
+              *ngIf="cell === ''"
+              class="cell-input blocked-cell"
+              type="text"
+              disabled
+            />
 
             <!-- Иначе показываем инпут -->
             <input

@@ -14,6 +14,7 @@
 
 .grid-container {
   margin-right: 30px;
+  padding-right: 5px;
   box-shadow: 0 4px 8px #ccc;
 }
 
@@ -24,7 +25,6 @@
 .grid-cell {
   width: 60px;
   height: 60px;
-  border: 1px solid #ccc;
   /* Можно сразу сделать position: relative
      но мы тут вложим .cell-content с relative */
   display: flex;
@@ -53,7 +53,6 @@
   width: 100%;
   height: 100%;
   background-color: #e0e0e0;
-  box-shadow: 0 4px 8px #ccc;
 }
 
 /* Инпут для букв */
@@ -62,8 +61,15 @@
   height: 100%;
   text-align: center;
   font-size: 28px;
-  border: none;
+  border: 1px solid #ccc; /* Граница */
   background-color: #ffffff;
+}
+
+.cell-input:disabled {
+  background-color: #e0e0e0 !important; /* Серый фон */
+  color: #ffffff; /* Цвет текста */
+  border: 1px solid #ccc; /* Граница */
+  cursor: not-allowed; /* Курсор "запрещено" */
 }
 
 /* Зачёркнутое слово, если решено */
