@@ -1,25 +1,27 @@
-<div class="header-container">
-  <h2>Ручное создание кроссворда</h2>
-</div>
+<div class="content">
+  <div class="header-container">
+    <h2>Ручное создание кроссворда</h2>
+  </div>
 
-<div class="grid">
-  <div class="grid-container">
-    <div>
-      <h3>Сетка</h3>
-      <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
-        <div
-          *ngFor="let cell of row; let colIndex = index"
-          class="grid-cell"
-          [class.selected]="isSelectedCell(rowIndex, colIndex)"
-          (mousedown)="startSelection(rowIndex, colIndex)"
-          (mouseover)="continueSelection(rowIndex, colIndex)"
-          (mouseup)="endSelection()"
-        >
-          {{ cell }}
+  <div class="grid">
+    <div class="grid-container">
+      <div>
+        <h3>Сетка</h3>
+        <div *ngFor="let row of grid; let rowIndex = index" class="grid-row">
+          <div
+            *ngFor="let cell of row; let colIndex = index"
+            class="grid-cell"
+            [class.selected]="isSelectedCell(rowIndex, colIndex)"
+            (mousedown)="startSelection(rowIndex, colIndex)"
+            (mouseover)="continueSelection(rowIndex, colIndex)"
+            (mouseup)="endSelection()"
+          >
+            {{ cell }}
+          </div>
         </div>
       </div>
-    </div>
 
+    </div>
     <div>
       <h3>Слова в кроссворде</h3>
 
@@ -55,10 +57,11 @@
       </div>
     </div>
   </div>
-</div>
 
-<div class="button-container">
-  <button class="save-button" (click)="saveCrossword()">Создать кроссворд</button>
+  <div class="button-container">
+    <button class="save-button" (click)="saveCrossword()">
+      Создать кроссворд
+    </button>
+  </div>
 </div>
-
 <app-notification></app-notification>
