@@ -26,6 +26,7 @@ interface CrosswordData {
   height: number;
   grid: string[][];
   words: Word[];
+  hints: number,
   clues: {
     across: Clue[];
     down: Clue[];
@@ -52,6 +53,7 @@ export class CrosswordPlayComponent implements OnInit {
     height: 0,
     grid: [],
     words: [],
+    hints: 0,
     clues: {
       across: [],
       down: [],
@@ -126,7 +128,10 @@ export class CrosswordPlayComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching crossword data:', err);
-        this.notification.show(`Произошла ошибка при получении кроссворда. Попробуйте ещё раз. Вот причина возникновения ошибки: ${err}`, 'error');
+        this.notification.show(
+          `Произошла ошибка при получении кроссворда. Попробуйте ещё раз. Вот причина возникновения ошибки: ${err}`,
+          'error'
+        );
       },
     });
   }
@@ -162,6 +167,49 @@ export class CrosswordPlayComponent implements OnInit {
         }
       }
     }
+  }
+
+  /**
+   * Нажатие на кнопку "?" для слова (clue).
+   * Если есть подсказки (this.crosswordData.hints > 0), то заполняем все буквы этого слова.
+   * Затем уменьшаем this.crosswordData.hints на 1.
+   */
+  useHint(clue: Clue): void {
+    if (this.crosswordData.hints <= 0) {
+      console.log('No more hints available!');
+      return;
+    }
+
+    // Находим Word, соответствующее этому clue
+    const word = this.crosswordData.words.find((w) =>
+      w.cells.every((cell) =>
+        clue.cells.some(
+          (clueCell) => clueCell.row === cell.row && clueCell.col === cell.col
+        )
+      )
+    );
+    if (!word) {
+      console.log('Cannot find word for this clue');
+      return;
+    }
+
+    // Проставляем в userInputs все буквы
+    word.cells.forEach((cell) => {
+      const originalLetter = this.crosswordData.grid[cell.row][cell.col];
+      this.userInputs[`${cell.row}-${cell.col}`] = originalLetter;
+    });
+
+    // уменьшаем количество подсказок
+    this.crosswordData.hints--;
+
+    // после заполнения проверим, solved ли слово
+    const solved = this.checkWordSolved(word);
+    if (solved) {
+      this.solvedWords.add(word.word);
+    } else {
+      this.solvedWords.delete(word.word);
+    }
+    this.checkGameCompletion();
   }
 
   // Событие при вводе буквы

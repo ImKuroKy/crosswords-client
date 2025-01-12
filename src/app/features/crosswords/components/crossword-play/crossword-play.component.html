@@ -1,6 +1,8 @@
 <div>
   <h2 class="title">
-    {{ crosswordData.title }}
+    {{ crosswordData.title + ". " }}
+    <!-- Выводим текущее количество подсказок -->
+    <span class="hints-info">Подсказок: {{ crosswordData.hints }}</span>
     <span *ngIf="isGameCompleted" class="completion-message">
       Поздравляем, вы успешно разгадали кроссворд!
     </span>
@@ -44,26 +46,38 @@
       </div>
     </div>
 
-    <!-- Список подсказок -->
+    <!-- Подсказки (список слов) -->
     <div>
-      <h3>Загаданные слова</h3>
-      <div class="clues-list">
-        <h4>По-горизонтали:</h4>
-        <div *ngFor="let clue of crosswordData?.clues?.across">
-          <strong [ngClass]="{'solved': isWordSolved(clue)}">
-            {{ clue.number + "A" }}:
-          </strong>
-          {{ clue.clue }}
-        </div>
+      <h3>По-горизонтали:</h3>
+      <div *ngFor="let clue of crosswordData.clues?.across">
+        <!-- Если слово решено, можно зачеркнуть... -->
+        <strong [ngClass]="{'solved': isWordSolved(clue)}">
+          {{ clue.number + "A" }}:
+        </strong>
+        {{ clue.clue }}
+        <!-- Кнопка "?" для использования подсказки, если есть -->
+        <button 
+          class="hint-button"
+          (click)="useHint(clue)"
+          [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
+        >
+          ?
+        </button>
       </div>
-      <div class="clues-list">
-        <h4>По-вертикали:</h4>
-        <div *ngFor="let clue of crosswordData?.clues?.down">
-          <strong [ngClass]="{'solved': isWordSolved(clue)}">
-            {{ clue.number + "D" }}:
-          </strong>
-          {{ clue.clue }}
-        </div>
+
+      <h3>По-вертикали:</h3>
+      <div *ngFor="let clue of crosswordData.clues?.down">
+        <strong [ngClass]="{'solved': isWordSolved(clue)}">
+          {{ clue.number + "D" }}:
+        </strong>
+        {{ clue.clue }}
+        <button
+          class="hint-button"
+          (click)="useHint(clue)"
+          [disabled]="crosswordData.hints === 0 || isWordSolved(clue)"
+        >
+          ?
+        </button>
       </div>
     </div>
   </div>
